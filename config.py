@@ -15,10 +15,10 @@ INTERVALO_SEGUNDOS = 300
 MAX_ANUNCIOS_POR_FUENTE = None
 
 # --- Ritmo de scraping (más alto = menos bloqueos del portal) ---
-SCRAPER_PAUSA_MIN = 4.0
-SCRAPER_PAUSA_MAX = 11.0
-PAUSA_ENTRE_FUENTES_MIN = 10.0
-PAUSA_ENTRE_FUENTES_MAX = 22.0
+SCRAPER_PAUSA_MIN = 6.0
+SCRAPER_PAUSA_MAX = 15.0
+PAUSA_ENTRE_FUENTES_MIN = 15.0
+PAUSA_ENTRE_FUENTES_MAX = 30.0
 
 # Abrir cada anuncio en otra petición para buscar "inmobiliaria" en el HTML.
 # True = más fiel y MUCHAS más peticiones (riesgo de bloqueo).

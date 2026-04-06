@@ -62,19 +62,30 @@ PALABRAS_INMOBILIARIA = [
     "corporation",
 ]
 
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/122.0.0.0 Safari/537.36"
-    ),
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "es-ES,es;q=0.9,en;q=0.8",
-    "Accept-Encoding": "gzip, deflate",
-    "DNT": "1",
-    "Connection": "keep-alive",
-    "Upgrade-Insecure-Requests": "1",
-}
+USER_AGENTS = [
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3.1 Safari/605.1.15",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+]
+
+def get_random_headers():
+    """Genera headers aleatorios para evitar detección"""
+    return {
+        "User-Agent": random.choice(USER_AGENTS),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "Accept-Language": random.choice(["es-ES,es;q=0.9,en;q=0.8", "en-US,en;q=0.9,es;q=0.8", "es-ES,es;q=0.9,en-GB;q=0.8,en;q=0.7"]),
+        "Accept-Encoding": "gzip, deflate, br",
+        "DNT": "1",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "none",
+        "Sec-Fetch-User": "?1",
+        "Cache-Control": "max-age=0",
+    }
 
 REQUEST_TIMEOUT = 25
 
@@ -139,14 +150,42 @@ def es_inmobiliaria(
 
 
 def _get_con_reintento(session: requests.Session, url: str) -> requests.Response:
-    r = session.get(url, timeout=REQUEST_TIMEOUT)
-    if r.status_code == 429:
-        espera = random.uniform(50, 100)
-        print(f"   (429: esperando {espera:.0f}s…)")
-        time.sleep(espera)
-        r = session.get(url, timeout=REQUEST_TIMEOUT)
-    r.raise_for_status()
-    return r
+    """GET con reintentos y manejo de 403"""
+    max_retries = 3
+    base_wait = 2
+    
+    for attempt in range(max_retries):
+        try:
+            # Usar headers aleatorios en cada intento
+            headers = get_random_headers()
+            r = session.get(url, timeout=REQUEST_TIMEOUT, headers=headers)
+            
+            if r.status_code == 429:
+                espera = random.uniform(50, 100)
+                print(f"   (429: esperando {espera:.0f}s…)")
+                time.sleep(espera)
+                continue
+            elif r.status_code == 403:
+                if attempt < max_retries - 1:
+                    espera = base_wait * (2 ** attempt) + random.uniform(5, 15)
+                    print(f"   (403: reintentando en {espera:.1f}s - intento {attempt + 1}/{max_retries})")
+                    time.sleep(espera)
+                    continue
+                else:
+                    print(f"   (403: bloqueado después de {max_retries} intentos)")
+                    r.raise_for_status()
+            
+            r.raise_for_status()
+            return r
+            
+        except requests.RequestException as e:
+            if attempt < max_retries - 1:
+                espera = base_wait * (2 ** attempt) + random.uniform(1, 3)
+                print(f"   (Error {e}: reintentando en {espera:.1f}s - intento {attempt + 1}/{max_retries})")
+                time.sleep(espera)
+                continue
+            else:
+                raise
 
 
 def get_listado(session: requests.Session, url: str) -> requests.Response:
