@@ -10,6 +10,14 @@ from telegram_alert import enviar_mensaje
 from urls import normalizar_url_anuncio
 from verificador import anuncio_activo
 
+# Importar bot interactivo
+try:
+    from telegram_bot import start_telegram_thread
+    TELEGRAM_INTERACTIVE = True
+except ImportError:
+    print("⚠️ python-telegram-bot no instalado. Solo modo alertas.")
+    TELEGRAM_INTERACTIVE = False
+
 
 def ciclo():
     print("─" * 60)
@@ -70,16 +78,32 @@ def ciclo():
 
 
 def main():
-    print("Bot inmobiliario — Ctrl+C para salir")
+    print("Bot inmobiliario iniciado...")
     print(f"Base de datos: {config.DB_PATH}")
     
-    # En Render, solo ejecutar una vez y salir
-    if os.environ.get("RENDER"):
-        print("Ejecutando en Render - modo single run")
-        ciclo()
-        print("Bot finalizado. Render reiniciará según su configuración.")
+    # Iniciar bot interactivo de Telegram
+    if TELEGRAM_INTERACTIVE:
+        print("🤖 Iniciando bot interactivo de Telegram...")
+        start_telegram_thread()
+    
+    # En Render, ejecutar indefinidamente como worker
+    if os.environ.get("RENDER") or os.environ.get("RENDER_SERVICE_ID"):
+        print("Ejecutando en Render - modo worker continuo")
+        while True:
+            try:
+                ciclo()
+                print(f"Esperando {config.INTERVALO_SEGUNDOS} segundos para próxima búsqueda...")
+                time.sleep(config.INTERVALO_SEGUNDOS)
+            except KeyboardInterrupt:
+                print("\nDetenido por el usuario.")
+                break
+            except Exception as e:
+                print(f"Error en ciclo: {e}")
+                print("Reiniciando ciclo en 30 segundos...")
+                time.sleep(30)
         return
 
+    # Modo local
     while True:
         try:
             ciclo()
@@ -87,6 +111,12 @@ def main():
         except KeyboardInterrupt:
             print("\nDetenido por el usuario.")
             sys.exit(0)
+
+
+def keep_alive():
+    """Función para mantener el proceso vivo en Render"""
+    while True:
+        time.sleep(3600)  # Dormir 1 hora
 
 
 if __name__ == "__main__":
