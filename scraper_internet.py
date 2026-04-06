@@ -59,8 +59,22 @@ def buscar_duckduckgo() -> list:
 
         url = "https://duckduckgo.com/html/?q=" + busqueda.replace(" ", "+")
 
-        r = requests.get(url, headers=get_random_headers(), timeout=25)
-        soup = BeautifulSoup(r.text, "html.parser")
+        try:
+            r = requests.get(url, headers=get_random_headers(), timeout=25)
+            r.raise_for_status()
+            
+            # Intentar diferentes parsers si hay error
+            try:
+                soup = BeautifulSoup(r.text, "html.parser")
+            except Exception:
+                try:
+                    soup = BeautifulSoup(r.text, "lxml")
+                except Exception:
+                    soup = BeautifulSoup(r.text, "html5lib")
+                    
+        except Exception as e:
+            print(f"Error en DuckDuckGo: {e}")
+            continue
 
         resultados = soup.find_all("a", class_="result__a")
         if not resultados:

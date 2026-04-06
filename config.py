@@ -29,7 +29,7 @@ COMPROBAR_INMOBILIARIA_EN_FICHA = False
 USAR_DUCKDUCKGO = True
 USAR_PISOS = True
 USAR_FOTOCASA = True
-USAR_IDEALISTA = True
+USAR_IDEALISTA = False  # Temporalmente desactivado por errores
 USAR_HABITACLIA = True
 USAR_MILANUNCIOS = True
 IDEALISTA_HEADLESS = True
@@ -87,7 +87,7 @@ PORTALES_DUCKDUCKGO = [
 # --- Solo anuncios de particulares ---
 # True: el título debe incluir alguna palabra de particulares (particular, propietario, dueño…).
 # False: solo se descartan textos que parezcan agencia (más resultados, menos fiable).
-EXIGIR_PALABRA_PARTICULAR_EN_TITULO = True
+EXIGIR_PALABRA_PARTICULAR_EN_TITULO = False
 
 # True: comprobar que la URL siga viva (GET). Si el portal devuelve 403 al bot,
 # se asume igualmente activo (no se puede verificar).
