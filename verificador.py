@@ -1,7 +1,7 @@
 import requests
 
 import config
-from portales_comun import HEADERS, REQUEST_TIMEOUT
+from portales_comun import get_random_headers, REQUEST_TIMEOUT
 
 
 def anuncio_activo(url: str) -> bool:
@@ -11,7 +11,7 @@ def anuncio_activo(url: str) -> bool:
     try:
         r = requests.get(
             url,
-            headers=HEADERS,
+            headers=get_random_headers(),
             timeout=REQUEST_TIMEOUT,
             allow_redirects=True,
         )

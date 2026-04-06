@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 import config
 from portales_comun import (
-    HEADERS,
+    get_random_headers,
     es_inmobiliaria,
     get_listado,
     pausa_entre_peticiones,

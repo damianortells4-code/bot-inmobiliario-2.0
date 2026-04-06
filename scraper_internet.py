@@ -13,7 +13,7 @@ from scraper_fotocasa import buscar_anuncios as buscar_fotocasa
 from scraper_idealista import buscar_anuncios as buscar_idealista
 from scraper_pisos import buscar_anuncios as buscar_pisos
 
-from portales_comun import HEADERS, pausa_entre_fuentes
+from portales_comun import get_random_headers, pausa_entre_fuentes
 
 
 def _url_real_desde_duckduckgo(href: str) -> str:
@@ -57,7 +57,7 @@ def buscar_duckduckgo() -> list:
 
         url = "https://duckduckgo.com/html/?q=" + busqueda.replace(" ", "+")
 
-        r = requests.get(url, headers=HEADERS, timeout=25)
+        r = requests.get(url, headers=get_random_headers(), timeout=25)
         soup = BeautifulSoup(r.text, "html.parser")
 
         resultados = soup.find_all("a", class_="result__a")

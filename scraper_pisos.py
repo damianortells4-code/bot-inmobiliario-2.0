@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 import config
 from portales_comun import (
-    HEADERS,
+    get_random_headers,
     es_inmobiliaria,
     get_listado,
     pausa_entre_peticiones,
@@ -74,7 +74,7 @@ def buscar_anuncios(max_anuncios: Optional[int] = None):
     urls_listado = _urls_listado_pisos()
 
     with requests.Session() as session:
-        session.headers.update(HEADERS)
+        session.headers.update(get_random_headers())
 
         for i, url_listado in enumerate(urls_listado):
             if limite is not None and len(anuncios) >= limite:
