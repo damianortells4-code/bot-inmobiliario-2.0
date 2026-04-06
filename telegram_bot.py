@@ -100,8 +100,8 @@ def check_telegram_updates():
     
     while True:
         try:
-            url = f"https://api.telegram.org/bot{TOKEN}/getUpdates?offset={last_update_id + 1}"
-            r = requests.get(url, timeout=10)
+            url = f"https://api.telegram.org/bot{TOKEN}/getUpdates?offset={last_update_id + 1}&timeout=30"
+            r = requests.get(url, timeout=35)
             r.raise_for_status()
             
             data = r.json()
@@ -113,7 +113,7 @@ def check_telegram_updates():
         except Exception as e:
             print(f"Error revisando actualizaciones: {e}")
             
-        time.sleep(5)  # Revisar cada 5 segundos
+        time.sleep(3)  # Revisar cada 3 segundos
 
 def start_telegram_thread():
     """Inicia el bot en un hilo separado"""

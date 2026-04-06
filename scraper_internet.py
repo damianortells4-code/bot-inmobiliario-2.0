@@ -12,6 +12,8 @@ from urls import normalizar_url_anuncio
 from scraper_fotocasa import buscar_anuncios as buscar_fotocasa
 from scraper_idealista import buscar_anuncios as buscar_idealista
 from scraper_pisos import buscar_anuncios as buscar_pisos
+from scraper_habitaclia import buscar_anuncios as buscar_habitaclia
+from scraper_milanuncios import buscar_anuncios as buscar_milanuncios
 
 from portales_comun import get_random_headers, pausa_entre_fuentes
 
@@ -105,36 +107,36 @@ def buscar_internet(
     Junta fuentes y elimina URLs duplicadas.
     Si un argumento es None, se usa el valor en config.py.
     """
-    ip = config.USAR_PISOS if incluir_pisos is None else incluir_pisos
-    ifc = config.USAR_FOTOCASA if incluir_fotocasa is None else incluir_fotocasa
-    ii = config.USAR_IDEALISTA if incluir_idealista is None else incluir_idealista
-    iddg = config.USAR_DUCKDUCKGO if incluir_duckduckgo is None else incluir_duckduckgo
-    ih = (
-        config.IDEALISTA_HEADLESS
-        if idealista_headless is None
-        else idealista_headless
-    )
-
     bloques = []
 
-    if iddg:
+    if config.USAR_DUCKDUCKGO:
         bloques.append(buscar_duckduckgo())
 
-    if ip:
-        if bloques:
-            pausa_entre_fuentes()
+    if config.USAR_PISOS:
         bloques.append(buscar_pisos())
 
-    if ifc:
-        if bloques:
-            pausa_entre_fuentes()
+    if config.USAR_FOTOCASA:
         bloques.append(buscar_fotocasa())
 
-    if ii:
-        if bloques:
-            pausa_entre_fuentes()
-        bloques.append(buscar_idealista(headless=ih))
+    if config.USAR_IDEALISTA:
+        bloques.append(buscar_idealista())
 
-    fusionados = _fusionar_sin_duplicados(*bloques)
-    print("Total enlaces únicos (todos los portales):", len(fusionados))
-    return fusionados
+    if config.USAR_HABITACLIA:
+        bloques.append(buscar_habitaclia())
+
+    if config.USAR_MILANUNCIOS:
+        bloques.append(buscar_milanuncios())
+
+    # Unir y eliminar duplicados por URL normalizada
+    vistos: set[str] = set()
+    unicos = []
+
+    for bloque in bloques:
+        pausa_entre_fuentes()
+        for anuncio in bloque:
+            clave = normalizar_url_anuncio(anuncio["link"])
+            if clave and clave not in vistos:
+                vistos.add(clave)
+                unicos.append(anuncio)
+
+    return unicos

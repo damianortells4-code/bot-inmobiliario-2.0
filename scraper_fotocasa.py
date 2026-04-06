@@ -70,7 +70,7 @@ def buscar_anuncios(max_anuncios: Optional[int] = None):
     listados = _urls_listado("alquiler") + _urls_listado("comprar")
 
     with requests.Session() as session:
-        session.headers.update(HEADERS)
+        session.headers.update(get_random_headers())
 
         for i, url_listado in enumerate(listados):
             if limite is not None and len(anuncios) >= limite:

@@ -30,6 +30,8 @@ USAR_DUCKDUCKGO = True
 USAR_PISOS = True
 USAR_FOTOCASA = True
 USAR_IDEALISTA = True
+USAR_HABITACLIA = True
+USAR_MILANUNCIOS = True
 IDEALISTA_HEADLESS = True
 
 # --- Zonas: mismas áreas en todos los portales ---
@@ -39,21 +41,29 @@ ZONAS = [
         "pisos": "rubi",
         "fotocasa": "rubi",
         "idealista": "rubi-barcelona",
+        "habitaclia": "rubi",
+        "milanuncios": "rubi",
     },
     {
         "pisos": "sant_cugat_del_valles",
         "fotocasa": "sant-cugat-del-valles",
         "idealista": "sant-cugat-del-valles-barcelona",
+        "habitaclia": "sant-cugat-del-valles",
+        "milanuncios": "sant-cugat-del-valles",
     },
     {
         "pisos": "sabadell",
         "fotocasa": "sabadell",
         "idealista": "sabadell-barcelona",
+        "habitaclia": "sabadell",
+        "milanuncios": "sabadell",
     },
     {
         "pisos": "terrassa",
         "fotocasa": "terrassa",
         "idealista": "terrassa-barcelona",
+        "habitaclia": "terrassa",
+        "milanuncios": "terrassa",
     },
 ]
 
