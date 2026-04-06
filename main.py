@@ -86,31 +86,23 @@ def main():
         print("🤖 Iniciando bot interactivo de Telegram...")
         start_telegram_thread()
     
-    # En Render, ejecutar indefinidamente como worker
-    if os.environ.get("RENDER") or os.environ.get("RENDER_SERVICE_ID"):
-        print("Ejecutando en Render - modo worker continuo")
-        while True:
-            try:
-                ciclo()
-                print(f"Esperando {config.INTERVALO_SEGUNDOS} segundos para próxima búsqueda...")
-                time.sleep(config.INTERVALO_SEGUNDOS)
-            except KeyboardInterrupt:
-                print("\nDetenido por el usuario.")
-                break
-            except Exception as e:
-                print(f"Error en ciclo: {e}")
-                print("Reiniciando ciclo en 30 segundos...")
-                time.sleep(30)
-        return
-
-    # Modo local
+    # Ejecutar indefinidamente como worker (tanto en local como en Render)
+    print("🔄 Iniciando modo worker continuo...")
+    print("📝 Presiona Ctrl+C para detener el bot")
+    
     while True:
         try:
             ciclo()
+            print(f"⏳ Esperando {config.INTERVALO_SEGUNDOS} segundos para próxima búsqueda...")
             time.sleep(config.INTERVALO_SEGUNDOS)
         except KeyboardInterrupt:
-            print("\nDetenido por el usuario.")
-            sys.exit(0)
+            print("\n🛑 Bot detenido por el usuario.")
+            print("👋 ¡Hasta pronto!")
+            break
+        except Exception as e:
+            print(f"❌ Error en ciclo: {e}")
+            print("🔄 Reiniciando ciclo en 30 segundos...")
+            time.sleep(30)
 
 
 def keep_alive():
