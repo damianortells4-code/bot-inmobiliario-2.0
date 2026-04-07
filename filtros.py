@@ -887,24 +887,240 @@ def es_particular(texto: str) -> bool:
     True solo si parece anuncio de particular:
     - rechaza señales claras de agencia / inmobiliaria
     - si EXIGIR_PALABRA_PARTICULAR_EN_TITULO: exige al menos una PALABRAS_PARTICULAR
+    - ahora también detecta estilo de agencia camuflada
     """
     t = texto.lower()
-
-    for palabra in PALABRAS_INMOBILIARIA:
-        if len(palabra) <= 3:
-            continue
-        if palabra in t:
+    
+    # 1. Rechazo directo por palabras de agencia/inmobiliaria
+    for p in PALABRAS_INMOBILIARIA + PALABRAS_AGENCIA_EXTRA:
+        if p in t:
             return False
-
-    for palabra in PALABRAS_AGENCIA_EXTRA:
-        if palabra in t:
-            return False
-
-    for palabra in PALABRAS_PARTICULAR:
-        if palabra in t:
-            return True
-
-    if getattr(config, "EXIGIR_PALABRA_PARTICULAR_EN_TITULO", True):
+    
+    # 2. Detección de estilo de agencia camuflada
+    if _estilo_agencia_camuflada(texto):
         return False
-
+    
+    # 3. Si exige palabra particular, verificar que la tenga
+    if config.EXIGIR_PALABRA_PARTICULAR_EN_TITULO:
+        return any(p in t for p in PALABRAS_PARTICULAR)
+    
+    # 4. Si no exige palabra particular, aceptar si no es agencia
     return True
+
+
+def _estilo_agencia_camuflada(texto: str) -> bool:
+    """
+    Detecta si el texto parece de agencia aunque use palabras de particular.
+    Analiza patrones de lenguaje profesional.
+    """
+    t = texto.lower()
+    original = texto
+    
+    # 1. Demasiada información profesional estructurada
+    if _tiene_info_profesional_excesiva(t):
+        return True
+    
+    # 2. Lenguaje demasiado formal o comercial
+    if _lenguaje_demasiado_formal(t):
+        return True
+    
+    # 3. Patrones de marketing
+    if _contiene_marketing_oculto(t):
+        return True
+    
+    # 4. Estructura muy organizada (como plantilla)
+    if _estructura_demasiado_organizada(original):
+        return True
+    
+    # 5. Números y precios muy específicos
+    if _precios_demasiado_profesionales(t):
+        return True
+    
+    # 6. Contacto múltiple (señal de profesional)
+    if _contacto_multiple_profesional(t):
+        return True
+    
+    return False
+
+
+def _tiene_info_profesional_excesiva(texto: str) -> bool:
+    """Detecta si hay demasiada información profesional."""
+    
+    # Contar menciones a diferentes tipos de contacto
+    contactos = 0
+    if any(word in texto for word in ['teléfono', 'telefono', 'phone', 'móvil', 'movil']):
+        contactos += 1
+    if any(word in texto for word in ['whatsapp', 'wp', 'wsp']):
+        contactos += 1
+    if any(word in texto for word in ['email', 'mail', 'correo', 'e-mail']):
+        contactos += 1
+    if any(word in texto for word in ['web', 'página', 'pagina', 'online']):
+        contactos += 1
+    
+    # Si tiene 3+ tipos de contacto, es probablemente profesional
+    if contactos >= 3:
+        return True
+    
+    # Menciones a horarios específicos (señal de profesional)
+    horarios = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo',
+                'mañana', 'tarde', 'noche', '24h', '24 horas', 'horario', 'atención', 'atencion']
+    if sum(1 for h in horarios if h in texto) >= 2:
+        return True
+    
+    return False
+
+
+def _lenguaje_demasiado_formal(texto: str) -> bool:
+    """Detecta lenguaje demasiado formal o comercial."""
+    
+    # Palabras formales/comerciales
+    palabras_formales = [
+        'exclusivo', 'exclusiva', 'exclusivos', 'exclusivas',
+        'privilegio', 'privilegios', 'oportunidad única', 'oportunidad única',
+        'inversión', 'inversion', 'rentabilidad', 'renta',
+        'financiado', 'financiada', 'financiamiento',
+        'promoción', 'promocion', 'oferta especial', 'oferta especial',
+        'servicio', 'servicios', 'atención', 'atencion', 'cliente',
+        'profesional', 'profesionales', 'calidad', 'garantía', 'garantia',
+        'excelente', 'excelentes', 'excepcional', 'excepcionales',
+        'inmejorable', 'inmejorables', 'único', 'unica', 'únicos', 'unicas',
+        'premium', 'lujo', 'deluxe', 'high-end', 'vip',
+        'estratégico', 'estrategica', 'estratégicos', 'estrategicas',
+        'ubicación privilegiada', 'ubicacion privilegiada',
+        'zona exclusiva', 'zonas exclusivas', 'área premium'
+    ]
+    
+    # Si tiene 3+ palabras formales, es sospechoso
+    count = sum(1 for word in palabras_formales if word in texto)
+    if count >= 3:
+        return True
+    
+    # Uso de abreviaturas profesionales
+    abreviaturas = ['s.l.', 'sl', 'sa', 'ltd', 'ltd.', 'cif', 'nif', 'dni']
+    if any(abr in texto for abr in abreviaturas):
+        return True
+    
+    return False
+
+
+def _contiene_marketing_oculto(texto: str) -> bool:
+    """Detecta patrones de marketing ocultos."""
+    
+    # Frases de marketing
+    frases_marketing = [
+        'no te quedes sin', 'última oportunidad', 'últimas unidades',
+        'precio rebajado', 'precio reducido', 'super oferta',
+        'oferta limitada', 'plazas limitadas', 'oportunidad única',
+        'inversión segura', 'inversion segura', 'rentabilidad asegurada',
+        'no te arrepentirás', 'no te arrepentiras', 'decisión acertada',
+        'elección perfecta', 'eleccion perfecta', 'no encontrarás mejor',
+        'no encontraras mejor', 'la mejor opción', 'la mejor opcion',
+        'calidad precio', 'relacion calidad', 'calidad-precio',
+        'más por menos', 'mas por menos', 'ahorra dinero',
+        'ahorra comprando', 'compra inteligente', 'inversión inteligente',
+        'negocio seguro', 'negocio seguro', 'inversión segura',
+        'oportunidad de oro', 'oportunidad de oro', 'gangas',
+        'chollo', 'chollos', 'rebaja', 'rebajas', 'liquidación',
+        'liquidacion', 'stock limitado', 'unidades limitadas'
+    ]
+    
+    if any(frase in texto for frase in frases_marketing):
+        return True
+    
+    # Emojis excesivos (señal de marketing)
+    emoji_count = sum(1 for char in texto if char in ['!', '¡', '?', '¿', '*', '·', '·', '°', 'º', 'ª'])
+    if emoji_count >= 5:
+        return True
+    
+    return False
+
+
+def _estructura_demasiado_organizada(texto: str) -> bool:
+    """Detecta si el texto está demasiado estructurado (plantilla)."""
+    
+    # Muchas líneas separadas por guiones o puntos
+    lineas = texto.split('\n')
+    lineas_con_formato = 0
+    
+    for linea in lineas:
+        linea_limpia = linea.strip()
+        if not linea_limpia:
+            continue
+            
+        # Si empieza con viñetas o números
+        if any(linea_limpia.startswith(pref) for pref in ['-', '·', '·', '°', 'º', 'ª', '1.', '2.', '3.', '4.', '5.', 'a)', 'b)', 'c)']):
+            lineas_con_formato += 1
+        
+        # Si tiene muchos dos puntos (descripciones)
+        if linea_limpia.count(':') >= 2:
+            lineas_con_formato += 1
+    
+    # Si hay 3+ líneas con formato, es sospechoso
+    if lineas_con_formato >= 3:
+        return True
+    
+    # Texto muy largo con mucha puntuación organizada
+    if len(texto) > 300 and texto.count('.') >= 10:
+        return True
+    
+    return False
+
+
+def _precios_demasiado_profesionales(texto: str) -> bool:
+    """Detecta precios muy específicos o profesionales."""
+    
+    import re
+    
+    # Buscar patrones de precios muy específicos
+    patrones_precio = [
+        r'\d+[.,]\d{3}[.,]\d{2}',  # 1.234,56
+        r'\d{3}[.,]\d{2}',         # 123,45
+        r'\d{4}[.,]\d{2}',         # 1234,56
+        r'\d{5}[.,]\d{2}',         # 12345,56
+    ]
+    
+    count_precios = 0
+    for patron in patrones_precio:
+        matches = re.findall(patron, texto)
+        count_precios += len(matches)
+    
+    # Si hay 2+ precios detallados, es profesional
+    if count_precios >= 2:
+        return True
+    
+    # Menciones a financiación, hipotecas, etc.
+    if any(word in texto for word in ['hipoteca', 'hipotecas', 'financiar', 'financiacion', 'préstamo', 'prestamo', 'cuota', 'cuotas']):
+        return True
+    
+    return False
+
+
+def _contacto_multiple_profesional(texto: str) -> bool:
+    """Detecta múltiples formas de contacto (señal de profesional)."""
+    
+    # Buscar diferentes formatos de teléfono
+    telefonos = 0
+    import re
+    
+    # Patrones de teléfono
+    patrones_tel = [
+        r'\d{3}[-.\s]\d{3}[-.\s]\d{3}',  # 123-456-789
+        r'\d{3}[-.\s]\d{2}[-.\s]\d{2}[-.\s]\d{2}',  # 123-45-67-89
+        r'\d{9}',                         # 123456789
+        r'\d{3}\s\d{6}',                  # 123 456789
+        r'\+34\s\d{9}',                   # +34 123456789
+    ]
+    
+    for patron in patrones_tel:
+        matches = re.findall(patron, texto)
+        telefonos += len(matches)
+    
+    # Si hay 2+ teléfonos, es profesional
+    if telefonos >= 2:
+        return True
+    
+    # Email + teléfono
+    if telefonos >= 1 and any(word in texto for word in ['@', 'email', 'mail', 'correo']):
+        return True
+    
+    return False
