@@ -129,12 +129,12 @@ def buscar_anuncios(max_anuncios: Optional[int] = None) -> list[dict]:
 
                     # Descartar si ya sabemos que es inmobiliaria
                     if link in cache_inmobiliaria and cache_inmobiliaria[link]:
-                        print(f"❌ inmobiliaria cacheada: {titulo[:50]}...")
+                        print(f"   (inmobiliaria filtrada)")
                         continue
 
                     if comprobar_ficha and es_inmobiliaria(link):
                         cache_inmobiliaria[link] = True
-                        print(f"❌ inmobiliaria detectada (ficha): {titulo[:50]}...")
+                        print(f"   (inmobiliaria filtrada)")
                         continue
 
                     cache_inmobiliaria[link] = False

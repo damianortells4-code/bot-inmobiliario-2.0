@@ -29,8 +29,8 @@ COMPROBAR_INMOBILIARIA_EN_FICHA = False
 USAR_DUCKDUCKGO = True
 USAR_PISOS = True
 USAR_FOTOCASA = True
-USAR_IDEALISTA = False  # Temporalmente desactivado por errores
-USAR_HABITACLIA = True
+USAR_IDEALISTA = False  # Temporalmente desactivado
+USAR_HABITACLIA = False  # Desactivado por errores 404
 USAR_MILANUNCIOS = True
 IDEALISTA_HEADLESS = True
 

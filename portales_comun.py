@@ -885,7 +885,9 @@ def es_inmobiliaria(
 
 
 def _get_con_reintento(session: requests.Session, url: str) -> requests.Response:
-    """GET con reintentos y manejo de 403"""
+    """
+    Realiza petición GET con reintentos y manejo de 403/429.
+    """
     max_retries = 3
     base_wait = 2
     
@@ -924,6 +926,8 @@ def _get_con_reintento(session: requests.Session, url: str) -> requests.Response
 
 
 def get_listado(session: requests.Session, url: str) -> requests.Response:
-    """GET de página de listado con pausa previa y reintento ante 429."""
+    """
+    GET de página de listado con pausa previa y reintento ante 429.
+    """
     pausa_entre_peticiones()
     return _get_con_reintento(session, url)

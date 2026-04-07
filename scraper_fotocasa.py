@@ -105,12 +105,12 @@ def buscar_anuncios(max_anuncios: Optional[int] = None):
                 print("Fotocasa →", (titulo[:80] if titulo else link))
 
                 if titulo_sugiere_inmobiliaria(titulo):
-                    print("❌ inmobiliaria detectada (título)")
+                    print(f"   (inmobiliaria filtrada)")
                     cache_inmobiliaria[link] = True
                     continue
 
                 if comprobar_ficha and es_inmobiliaria(session, link, cache_inmobiliaria):
-                    print("❌ inmobiliaria detectada")
+                    print(f"   (inmobiliaria filtrada)")
                     continue
 
                 anuncios.append({"titulo": titulo, "link": link})
