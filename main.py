@@ -5,6 +5,7 @@ import os
 import config
 from database import anuncio_existente, guardar_anuncio
 from filtros import es_particular
+from filtros_tiempo import filtrar_anuncios_recientes
 from scraper_internet import buscar_internet
 from telegram_alert import enviar_mensaje
 from urls import normalizar_url_anuncio
@@ -20,27 +21,33 @@ except ImportError:
 
 
 def ciclo():
-    print("─" * 60)
-    print("Buscando anuncios de particulares (filtro + sin duplicar por URL)…")
+    print("·" * 60)
+    print("Buscando anuncios de particulares (filtro + sin duplicar por URL)...")
     print(
         f"Fuentes: DDG={config.USAR_DUCKDUCKGO} pisos={config.USAR_PISOS} "
-        f"fotocasa={config.USAR_FOTOCASA} idealista={config.USAR_IDEALISTA}"
+        f"fotocasa={config.USAR_FOTOCASA} idealista={config.USAR_IDEALISTA} "
+        f"habitaclia={config.USAR_HABITACLIA} milanuncios={config.USAR_MILANUNCIOS}"
     )
     print(
         f"Exigir palabra de particular en título: "
         f"{config.EXIGIR_PALABRA_PARTICULAR_EN_TITULO}"
     )
+    print(f"Anuncios recientes: últimos 10 minutos")
     if config.MAX_ANUNCIOS_POR_FUENTE is not None:
         print(f"Límite por fuente (pruebas): {config.MAX_ANUNCIOS_POR_FUENTE}")
 
     anuncios = buscar_internet()
-
     print("Candidatos tras scrapers:", len(anuncios))
+
+    # Filtrar por tiempo (últimos 10 minutos)
+    print("Filtrando anuncios recientes...")
+    anuncios_recientes = filtrar_anuncios_recientes(anuncios, max_minutos=10)
+    print(f"Anuncios recientes: {len(anuncios_recientes)}")
 
     vistos_ronda: set[str] = set()
     nuevos = 0
 
-    for anuncio in anuncios:
+    for anuncio in anuncios_recientes:
         titulo = anuncio["titulo"]
         link = anuncio["link"]
 
@@ -64,15 +71,20 @@ def ciclo():
         guardar_anuncio(link, titulo)
         nuevos += 1
 
-        print("🏠", titulo)
-        print("🔗", clave)
+        print("·" * 60)
+        print("¡NUEVO!")
+        print("Título:", titulo)
+        print("URL:", clave)
 
-        mensaje = f"""🏠 {titulo}
+        mensaje = f"""· Nuevo anuncio de particular ·
 
-🔗 {clave}
+{titulo}
+
+{clave}
 """
         enviar_mensaje(mensaje)
 
+    print("·" * 60)
     print(f"Nuevos guardados / notificados en esta ronda: {nuevos}")
     print(f"Próxima ronda en {config.INTERVALO_SEGUNDOS} s\n")
 

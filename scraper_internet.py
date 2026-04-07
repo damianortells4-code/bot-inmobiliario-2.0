@@ -55,7 +55,7 @@ def buscar_duckduckgo() -> list:
     for busqueda in config.BUSQUEDAS_DUCKDUCKGO:
         print("DuckDuckGo buscando:", busqueda)
 
-        time.sleep(random.uniform(2.0, 5.0))
+        time.sleep(random.uniform(0.5, 1.5))  # Reducido de 2.0-5.0 a 0.5-1.5
 
         url = "https://duckduckgo.com/html/?q=" + busqueda.replace(" ", "+")
 
