@@ -8,17 +8,17 @@ Cada zona define el slug que usa cada portal (no son intercambiables).
 DB_PATH = "anuncios.db"
 
 # --- Bucle principal (segundos entre rondas de búsqueda) ---
-INTERVALO_SEGUNDOS = 120  # Reducido de 300 a 120 segundos (2 minutos)
+INTERVALO_SEGUNDOS = 180  # 3 minutos (balance entre velocidad y seguridad)
 
 # --- Límite por fuente (None = sin límite; útil para pruebas) ---
 # Ejemplo: MAX_ANUNCIOS_POR_FUENTE = 20
 MAX_ANUNCIOS_POR_FUENTE = None
 
 # --- Ritmo de scraping (más alto = menos bloqueos del portal) ---
-SCRAPER_PAUSA_MIN = 2.0  # Reducido de 6.0 a 2.0 segundos
-SCRAPER_PAUSA_MAX = 5.0  # Reducido de 15.0 a 5.0 segundos
-PAUSA_ENTRE_FUENTES_MIN = 5.0  # Reducido de 15.0 a 5.0 segundos
-PAUSA_ENTRE_FUENTES_MAX = 10.0  # Reducido de 30.0 a 10.0 segundos
+SCRAPER_PAUSA_MIN = 3.0  # Balance entre velocidad y seguridad
+SCRAPER_PAUSA_MAX = 8.0  # Tiempo suficiente para evitar detección
+PAUSA_ENTRE_FUENTES_MIN = 8.0  # Pausa entre portales
+PAUSA_ENTRE_FUENTES_MAX = 15.0  # Tiempo seguro entre fuentes
 
 # Abrir cada anuncio en otra petición para buscar "inmobiliaria" en el HTML.
 # True = más fiel y MUCHAS más peticiones (riesgo de bloqueo).

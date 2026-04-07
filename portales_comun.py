@@ -812,11 +812,16 @@ REQUEST_TIMEOUT = 25
 
 
 def pausa_entre_peticiones():
-    mn = float(getattr(config, "SCRAPER_PAUSA_MIN", 4.0))
-    mx = float(getattr(config, "SCRAPER_PAUSA_MAX", 10.0))
-    if mx < mn:
-        mx = mn
-    time.sleep(random.uniform(mn, mx))
+    """Pausa aleatoria entre peticiones para evitar detección."""
+    # Pausa más larga y aleatoria para simular comportamiento humano
+    pausa = random.uniform(config.SCRAPER_PAUSA_MIN, config.SCRAPER_PAUSA_MAX)
+    
+    # Añadir variación extra para evitar patrones
+    if random.random() < 0.3:  # 30% de probabilidad de pausa extra
+        pausa += random.uniform(1.0, 3.0)
+    
+    print(f"   (pausa {pausa:.1f}s)")
+    time.sleep(pausa)
 
 
 def pausa_entre_fuentes():
@@ -825,7 +830,16 @@ def pausa_entre_fuentes():
     mx = float(getattr(config, "PAUSA_ENTRE_FUENTES_MAX", 18.0))
     if mx < mn:
         mx = mn
-    time.sleep(random.uniform(mn, mx))
+    
+    # Pausa con variación extra
+    pausa = random.uniform(mn, mx)
+    
+    # 25% de probabilidad de pausa extra larga
+    if random.random() < 0.25:
+        pausa += random.uniform(2.0, 5.0)
+    
+    print(f"   (pausa entre fuentes {pausa:.1f}s)")
+    time.sleep(pausa)
 
 
 def titulo_sugiere_inmobiliaria(titulo: str) -> bool:
