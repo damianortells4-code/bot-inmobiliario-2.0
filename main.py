@@ -32,16 +32,16 @@ def ciclo():
         f"Exigir palabra de particular en título: "
         f"{config.EXIGIR_PALABRA_PARTICULAR_EN_TITULO}"
     )
-    print(f"Anuncios recientes: últimos 10 minutos")
+    print(f"Anuncios recientes: últimos 30 minutos")
     if config.MAX_ANUNCIOS_POR_FUENTE is not None:
         print(f"Límite por fuente (pruebas): {config.MAX_ANUNCIOS_POR_FUENTE}")
 
     anuncios = buscar_internet()
     print("Candidatos tras scrapers:", len(anuncios))
 
-    # Filtrar por tiempo (últimos 10 minutos)
+    # Filtrar por tiempo (últimos 30 minutos)
     print("Filtrando anuncios recientes...")
-    anuncios_recientes = filtrar_anuncios_recientes(anuncios, max_minutos=10)
+    anuncios_recientes = filtrar_anuncios_recientes(anuncios, max_minutos=30)
     print(f"Anuncios recientes: {len(anuncios_recientes)}")
 
     vistos_ronda: set[str] = set()
