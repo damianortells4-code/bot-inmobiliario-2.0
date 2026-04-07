@@ -353,6 +353,7 @@ def pausa_entre_fuentes():
 def titulo_sugiere_inmobiliaria(titulo: str) -> bool:
     t = titulo.lower()
     for palabra in PALABRAS_INMOBILIARIA:
+        # Solo filtrar palabras de más de 3 caracteres para evitar falsos positivos
         if len(palabra) <= 3:
             continue
         if palabra in t:
