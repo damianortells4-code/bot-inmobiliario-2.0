@@ -22,17 +22,19 @@ from scraper_internet import buscar_internet
 from telegram_alert import enviar_mensaje
 from urls import normalizar_url_anuncio
 from verificador import anuncio_activo
+from indicador_busqueda import iniciar_indicador, detener_indicador, set_estado_busqueda
 
 # Importar bot interactivo
 try:
     from telegram_bot import start_telegram_thread
     TELEGRAM_INTERACTIVE = True
 except ImportError:
-    print("⚠️ python-telegram-bot no instalado. Solo modo alertas.")
+    print("python-telegram-bot no instalado. Solo modo alertas.")
     TELEGRAM_INTERACTIVE = False
 
 
 def ciclo():
+    set_estado_busqueda("buscando")
     print("·" * 60)
     print("BUSCANDO ANUNCIOS DE PARTICULARES")
     print("·" * 60)
@@ -53,6 +55,7 @@ def ciclo():
 
     # Filtrar por tiempo (últimos 30 minutos)
     print("Filtrando anuncios recientes...")
+    set_estado_busqueda("analizando")
     anuncios_recientes = filtrar_anuncios_recientes(anuncios, max_minutos=30)
     print(f"Anuncios recientes: {len(anuncios_recientes)}")
 
@@ -101,25 +104,26 @@ def ciclo():
             continue
         vistos_ronda.add(clave)
 
-        if anuncio_existente(link):
+        if anuncio_existente(clave):
             continue
 
-        if not anuncio_activo(link):
-            continue
-
-        if not es_particular(titulo):
-            continue
-
-        guardar_anuncio(link, titulo)
-        nuevos += 1
-
-        print("·" * 60)
-        print("¡MEJOR ANUNCIO ENCONTRADO!")
-        print("Título:", titulo)
-        print("URL:", clave)
+        print(f"Nuevo anuncio de particular:")
+        print(f"Título: {titulo}")
+        print(f"URL: {link}")
         print("Puntuación:", anuncio.puntuacion_total)
         print("Detalles:", anuncio.detalles)
 
+        # Verificar que el anuncio existe y está activo
+        if not anuncio_activo(link):
+            print("Anuncio inactivo o eliminado, omitiendo.")
+            continue
+
+        # Verificar que es de particular
+        if not es_particular(titulo, link):
+            print("Inmobiliaria filtrada")
+            continue
+
+        set_estado_busqueda("notificando")
         mensaje = f"""¡MEJOR ANUNCIO DE PARTICULAR! 
 
 Puntuación: {anuncio.puntuacion_total}/100
@@ -134,6 +138,9 @@ Reciente: {anuncio.puntuacion_reciente}/100
 {clave}
 """
         enviar_mensaje(mensaje)
+        guardar_anuncio(clave, titulo, link)
+        nuevos += 1
+        set_estado_busqueda("analizando")
 
     print("·" * 60)
     print(f"Mejores anuncios procesados: {len(mejores_anuncios)}")
@@ -151,6 +158,9 @@ Reciente: {anuncio.puntuacion_reciente}/100
     print(f"Próxima ronda en {config.INTERVALO_SEGUNDOS} segundos")
     print("·" * 60)
     print()
+    
+    # Cambiar a estado esperando
+    set_estado_busqueda("esperando")
 
 
 def main():
@@ -173,24 +183,31 @@ def main():
     else:
         print("Modo alertas Telegram activado")
     
+    # Iniciar indicador visual
+    print("Iniciando indicador visual de búsqueda...")
+    iniciar_indicador()
+    
     print("Iniciando modo worker continuo...")
     print("Presiona Ctrl+C para detener el bot")
     print("·" * 60)
     print()
     
-    while True:
-        try:
+    try:
+        while True:
             ciclo()
-            print(f"⏳ Esperando {config.INTERVALO_SEGUNDOS} segundos para próxima búsqueda...")
+            print(f" Esperando {config.INTERVALO_SEGUNDOS} segundos para próxima búsqueda...")
             time.sleep(config.INTERVALO_SEGUNDOS)
-        except KeyboardInterrupt:
-            print("\n🛑 Bot detenido por el usuario.")
-            print("👋 ¡Hasta pronto!")
-            break
-        except Exception as e:
-            print(f"❌ Error en ciclo: {e}")
-            print("🔄 Reiniciando ciclo en 30 segundos...")
-            time.sleep(30)
+    except KeyboardInterrupt:
+        print("\nBot detenido por el usuario.")
+        print("¡Hasta pronto!")
+    except Exception as e:
+        print(f"Error en ciclo: {e}")
+        print("Reiniciando ciclo en 30 segundos...")
+        time.sleep(30)
+    finally:
+        # Detener indicador visual
+        detener_indicador()
+        print("Indicador visual detenido.")
 
 
 def keep_alive():
