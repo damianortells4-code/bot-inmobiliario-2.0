@@ -70,8 +70,8 @@ def ciclo():
 
     # Procesar solo anuncios de alta calidad
     for anuncio in mejores_anuncios:
-        titulo = anuncio['titulo']
-        link = anuncio['link']
+        titulo = anuncio.titulo
+        link = anuncio.link
 
         clave = normalizar_url_anuncio(link)
         if not clave:
@@ -94,20 +94,20 @@ def ciclo():
         nuevos += 1
 
         print("·" * 60)
-        print("🏆 ¡MEJOR ANUNCIO ENCONTRADO!")
+        print("¡MEJOR ANUNCIO ENCONTRADO!")
         print("Título:", titulo)
         print("URL:", clave)
-        print("Puntuación:", anuncio['puntuacion_total'])
-        print("Detalles:", anuncio.get('detalles', {}))
+        print("Puntuación:", anuncio.puntuacion_total)
+        print("Detalles:", anuncio.detalles)
 
-        mensaje = f"""🏆 ¡MEJOR ANUNCIO DE PARTICULAR! 🏆
+        mensaje = f"""¡MEJOR ANUNCIO DE PARTICULAR! 
 
-⭐ Puntuación: {anuncio['puntuacion_total']}/100
-💰 Precio: {anuncio['puntuacion_precio']}/100
-🏠 Características: {anuncio['puntuacion_caracteristicas']}/100
-📍 Ubicación: {anuncio['puntuacion_ubicacion']}/100
-📝 Descripción: {anuncio['puntuacion_descripcion']}/100
-🕐 Reciente: {anuncio['puntuacion_reciente']}/100
+Puntuación: {anuncio.puntuacion_total}/100
+Precio: {anuncio.puntuacion_precio}/100
+Características: {anuncio.puntuacion_caracteristicas}/100
+Ubicación: {anuncio.puntuacion_ubicacion}/100
+Descripción: {anuncio.puntuacion_descripcion}/100
+Reciente: {anuncio.puntuacion_reciente}/100
 
 {titulo}
 
