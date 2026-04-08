@@ -68,7 +68,7 @@ def ciclo():
 
     # Puntuar anuncios
     print("Analizando y puntuando anuncios...")
-    anuncios_puntuados, resumen_puntuacion = puntuar_anuncios(anuncios_para_puntuar, puntuacion_minima=65.0)
+    anuncios_puntuados, resumen_puntuacion = puntuar_anuncios(anuncios_para_puntuar, puntuacion_minima=40.0)
     
     # Obtener mejores anuncios
     mejores_anuncios = obtener_mejores_anuncios(anuncios_para_puntuar, top_n=3)

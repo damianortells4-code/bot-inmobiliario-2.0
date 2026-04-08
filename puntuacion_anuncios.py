@@ -51,17 +51,17 @@ class AnalizadorAnuncios:
             if match:
                 precio = float(match.group(1).replace(',', '.'))
                 
-                # Puntuación basada en precios competitivos
-                if precio <= 500:
+                # Puntuación basada en precios competitivos (más flexible)
+                if precio <= 600:
                     puntuacion = 100  # Excelente precio
-                elif precio <= 800:
+                elif precio <= 1000:
                     puntuacion = 85   # Muy bueno
-                elif precio <= 1200:
+                elif precio <= 1500:
                     puntuacion = 70   # Bueno
-                elif precio <= 1800:
+                elif precio <= 2000:
                     puntuacion = 50   # Regular
                 else:
-                    puntuacion = 20   # Caro
+                    puntuacion = 30   # Caro pero aceptable
                 
                 return puntuacion
         
@@ -77,6 +77,11 @@ class AnalizadorAnuncios:
             'nuevo', 'estrenar', 'moderno', 'cuarto baño', 'suite',
             'planta baja', 'sin muebles', 'cocina equipada', 'sala',
             'dormitorios dobles', 'armarios empotrados', 'hormigon',
+            # Características básicas añadidas
+            'piso', 'casa', 'chalet', 'atico', 'duplex', 'apartamento',
+            'habitaciones', 'dormitorios', 'baños', 'cocina', 'salon',
+            'centrico', 'cercano', 'acceso', 'facil', 'tranquilo',
+            'buen estado', 'bien', 'perfecto', 'ideal', 'excelente'
         ]
         
         caracteristicas_negativas = [
@@ -91,12 +96,12 @@ class AnalizadorAnuncios:
         # Características positivas
         for caracteristica in caracteristicas_deseadas:
             if caracteristica in texto_completo:
-                puntuacion += 5
+                puntuacion += 3  # Reducido de 5 a 3
         
-        # Características negativas
+        # Características negativas (menos penalización)
         for caracteristica in caracteristicas_negativas:
             if caracteristica in texto_completo:
-                puntuacion -= 3
+                puntuacion -= 1  # Reducido de 3 a 1
         
         return min(100, max(0, puntuacion))
     
