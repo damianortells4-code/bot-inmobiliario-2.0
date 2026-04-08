@@ -51,17 +51,19 @@ class AnalizadorAnuncios:
             if match:
                 precio = float(match.group(1).replace(',', '.'))
                 
-                # Puntuación basada en precios competitivos (más flexible)
-                if precio <= 600:
+                # Puntuación basada en precios (muy permisiva)
+                if precio <= 800:
                     puntuacion = 100  # Excelente precio
-                elif precio <= 1000:
-                    puntuacion = 85   # Muy bueno
-                elif precio <= 1500:
-                    puntuacion = 70   # Bueno
-                elif precio <= 2000:
-                    puntuacion = 50   # Regular
+                elif precio <= 1200:
+                    puntuacion = 90   # Muy bueno
+                elif precio <= 1800:
+                    puntuacion = 80   # Bueno
+                elif precio <= 2500:
+                    puntuacion = 70   # Aceptable
+                elif precio <= 3500:
+                    puntuacion = 60   # Regular pero ok
                 else:
-                    puntuacion = 30   # Caro pero aceptable
+                    puntuacion = 40   # Caro pero puede ser bueno
                 
                 return puntuacion
         
@@ -81,27 +83,33 @@ class AnalizadorAnuncios:
             'piso', 'casa', 'chalet', 'atico', 'duplex', 'apartamento',
             'habitaciones', 'dormitorios', 'baños', 'cocina', 'salon',
             'centrico', 'cercano', 'acceso', 'facil', 'tranquilo',
-            'buen estado', 'bien', 'perfecto', 'ideal', 'excelente'
+            'buen estado', 'bien', 'perfecto', 'ideal', 'excelente',
+            # Más características para aumentar puntuación
+            'grande', 'espacioso', 'comodo', 'acogedor', 'soleado',
+            'parking', 'garaje', 'trastero', 'buhardilla', 'azotea',
+            'jardin privado', 'piscina comunitaria', 'zona infantil',
+            'cerca transporte', 'cerca colegios', 'cerca comercios',
+            'seguro', 'vigilancia', 'portero', 'conserje'
         ]
         
         caracteristicas_negativas = [
             'sin ascensor', 'sin exterior', 'necesita reforma', 'antiguo',
             'pequeño', 'oscuro', 'humedad', 'mal estado', 'sin ventana',
-            'cuarta planta', 'sin terraza', 'interior', 'sin cocina',
+            # Reducir negativas - casi no penalizamos
         ]
         
         texto_completo = (titulo + ' ' + descripcion).lower()
-        puntuacion = 50.0  # Base
+        puntuacion = 60.0  # Base aumentada de 50 a 60
         
         # Características positivas
         for caracteristica in caracteristicas_deseadas:
             if caracteristica in texto_completo:
-                puntuacion += 3  # Reducido de 5 a 3
+                puntuacion += 2  # Reducido más
         
-        # Características negativas (menos penalización)
+        # Características negativas (casi sin penalización)
         for caracteristica in caracteristicas_negativas:
             if caracteristica in texto_completo:
-                puntuacion -= 1  # Reducido de 3 a 1
+                puntuacion -= 0.5  # Penalización mínima
         
         return min(100, max(0, puntuacion))
     

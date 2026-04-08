@@ -71,10 +71,10 @@ def ciclo():
 
     # Puntuar anuncios
     print("Analizando y puntuando anuncios...")
-    anuncios_puntuados, resumen_puntuacion = puntuar_anuncios(anuncios_para_puntuar, puntuacion_minima=40.0)
+    anuncios_puntuados, resumen_puntuacion = puntuar_anuncios(anuncios_para_puntuar, puntuacion_minima=20.0)
     
     # Obtener mejores anuncios
-    mejores_anuncios = obtener_mejores_anuncios(anuncios_para_puntuar, top_n=3)
+    mejores_anuncios = obtener_mejores_anuncios(anuncios_para_puntuar, top_n=10)
     
     # Mostrar resumen de puntuación
     print(resumen_puntuacion)
@@ -82,7 +82,7 @@ def ciclo():
     print(f"Mejores anuncios encontrados: {len(mejores_anuncios)}")
     if mejores_anuncios:
         print("Top anuncios:")
-        for i, anuncio in enumerate(mejores_anuncios[:3], 1):
+        for i, anuncio in enumerate(mejores_anuncios[:5], 1):
             print(f"  {i}. {anuncio.titulo[:50]}... (puntuación: {anuncio.puntuacion_total})")
     else:
         print("  No hay anuncios que cumplan los criterios de calidad")
