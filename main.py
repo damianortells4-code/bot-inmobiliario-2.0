@@ -34,19 +34,19 @@ except ImportError:
 
 def ciclo():
     print("·" * 60)
-    print("Buscando anuncios de particulares (filtro + sin duplicar por URL)...")
-    print(
-        f"Fuentes: DDG={config.USAR_DUCKDUCKGO} pisos={config.USAR_PISOS} "
-        f"fotocasa={config.USAR_FOTOCASA} idealista={config.USAR_IDEALISTA} "
-        f"habitaclia={config.USAR_HABITACLIA} milanuncios={config.USAR_MILANUNCIOS}"
-    )
-    print(
-        f"Exigir palabra de particular en título: "
-        f"{config.EXIGIR_PALABRA_PARTICULAR_EN_TITULO}"
-    )
-    print(f"Anuncios recientes: últimos 30 minutos")
+    print("BUSCANDO ANUNCIOS DE PARTICULARES")
+    print("·" * 60)
+    print(f"Timestamp: {datetime.now().strftime('%H:%M:%S')}")
+    print(f"Fuentes activas: DDG={config.USAR_DUCKDUCKGO} | Pisos={config.USAR_PISOS} | Fotocasa={config.USAR_FOTOCASA} | Idealista={config.USAR_IDEALISTA} | Milanuncios={config.USAR_MILANUNCIOS}")
+    print(f"Zonas: {len(config.ZONAS)} configuradas (Rubí, Sant Cugat, Sabadell, Terrassa)")
+    print(f"Intervalo: {config.INTERVALO_SEGUNDOS} segundos")
+    print(f"Exigir palabra de particular: {config.EXIGIR_PALABRA_PARTICULAR_EN_TITULO}")
+    print("Anuncios recientes: últimos 30 minutos")
     if config.MAX_ANUNCIOS_POR_FUENTE is not None:
         print(f"Límite por fuente (pruebas): {config.MAX_ANUNCIOS_POR_FUENTE}")
+    print("·" * 60)
+    print("Iniciando búsqueda en portales...")
+    print()
 
     anuncios = buscar_internet()
     print("Candidatos tras scrapers:", len(anuncios))
@@ -75,6 +75,15 @@ def ciclo():
     
     # Mostrar resumen de puntuación
     print(resumen_puntuacion)
+    
+    print(f"Mejores anuncios encontrados: {len(mejores_anuncios)}")
+    if mejores_anuncios:
+        print("Top anuncios:")
+        for i, anuncio in enumerate(mejores_anuncios[:3], 1):
+            print(f"  {i}. {anuncio.titulo[:50]}... (puntuación: {anuncio.puntuacion_total})")
+    else:
+        print("  No hay anuncios que cumplan los criterios de calidad")
+    print()
     
     vistos_ronda: set[str] = set()
     nuevos = 0
@@ -129,21 +138,45 @@ Reciente: {anuncio.puntuacion_reciente}/100
     print("·" * 60)
     print(f"Mejores anuncios procesados: {len(mejores_anuncios)}")
     print(f"Nuevos guardados / notificados en esta ronda: {nuevos}")
-    print(f"Próxima ronda en {config.INTERVALO_SEGUNDOS} s\n")
+    
+    # Resumen final del ciclo
+    print("·" * 60)
+    print("CICLO COMPLETADO")
+    print(f"Timestamp: {datetime.now().strftime('%H:%M:%S')}")
+    print(f"Total candidatos: {len(anuncios)}")
+    print(f"Anuncios recientes: {len(anuncios_recientes)}")
+    print(f"Anuncios puntuados: {len(anuncios_puntuados)}")
+    print(f"Mejores anuncios: {len(mejores_anuncios)}")
+    print(f"Nuevos notificados: {nuevos}")
+    print(f"Próxima ronda en {config.INTERVALO_SEGUNDOS} segundos")
+    print("·" * 60)
+    print()
 
 
 def main():
-    print("Bot inmobiliario iniciado...")
+    print("·" * 60)
+    print("BOT INMOBILIARIO 2.0 - INICIADO")
+    print("·" * 60)
+    print(f"Timestamp: {datetime.now().strftime('%H:%M:%S %d/%m/%Y')}")
     print(f"Base de datos: {config.DB_PATH}")
+    print(f"Intervalo: {config.INTERVALO_SEGUNDOS} segundos")
+    print(f"Zonas: {len(config.ZONAS)} configuradas")
+    print(f"Fuentes: DDG={config.USAR_DUCKDUCKGO} | Pisos={config.USAR_PISOS} | Fotocasa={config.USAR_FOTOCASA} | Idealista={config.USAR_IDEALISTA} | Milanuncios={config.USAR_MILANUNCIOS}")
+    print(f"Puntuación mínima: 40/100")
+    print(f"Filtro recientes: 30 minutos")
+    print("·" * 60)
     
     # Iniciar bot interactivo de Telegram
     if TELEGRAM_INTERACTIVE:
-        print("🤖 Iniciando bot interactivo de Telegram...")
+        print("Iniciando bot interactivo de Telegram...")
         start_telegram_thread()
+    else:
+        print("Modo alertas Telegram activado")
     
-    # Ejecutar indefinidamente como worker (tanto en local como en Render)
-    print("🔄 Iniciando modo worker continuo...")
-    print("📝 Presiona Ctrl+C para detener el bot")
+    print("Iniciando modo worker continuo...")
+    print("Presiona Ctrl+C para detener el bot")
+    print("·" * 60)
+    print()
     
     while True:
         try:
