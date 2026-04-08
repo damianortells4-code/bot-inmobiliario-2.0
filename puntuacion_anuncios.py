@@ -52,24 +52,24 @@ class AnalizadorAnuncios:
             if match:
                 precio = float(match.group(1).replace(',', '.'))
                 
-                # Puntuación basada en precios (muy permisiva)
-                if precio <= 800:
-                    puntuacion = 100  # Excelente precio
+                # Puntuación basada en precios (más realista)
+                if precio <= 600:
+                    puntuacion = 80   # Excelente precio
+                elif precio <= 900:
+                    puntuacion = 60   # Muy bueno
                 elif precio <= 1200:
-                    puntuacion = 90   # Muy bueno
+                    puntuacion = 40   # Bueno
                 elif precio <= 1800:
-                    puntuacion = 80   # Bueno
+                    puntuacion = 25   # Aceptable
                 elif precio <= 2500:
-                    puntuacion = 70   # Aceptable
-                elif precio <= 3500:
-                    puntuacion = 60   # Regular pero ok
+                    puntuacion = 15   # Regular
                 else:
-                    puntuacion = 40   # Caro pero puede ser bueno
+                    puntuacion = 5    # Caro
                 
                 return puntuacion
         
-        # Si no se encuentra precio, puntuación neutra
-        return 50.0
+        # Si no se encuentra precio, puntuación neutra baja
+        return 25.0
     
     def extraer_caracteristicas(self, titulo: str, descripcion: str) -> float:
         """Extrae y puntúa las características del anuncio."""
@@ -100,12 +100,12 @@ class AnalizadorAnuncios:
         ]
         
         texto_completo = (titulo + ' ' + descripcion).lower()
-        puntuacion = 60.0  # Base aumentada de 50 a 60
+        puntuacion = 15.0  # Base mucho más baja y realista
         
         # Características positivas
         for caracteristica in caracteristicas_deseadas:
             if caracteristica in texto_completo:
-                puntuacion += 2  # Reducido más
+                puntuacion += 1  # Reducido de 2 a 1
         
         # Características negativas (casi sin penalización)
         for caracteristica in caracteristicas_negativas:
