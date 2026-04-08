@@ -23,12 +23,12 @@ from scraper_internet import buscar_internet
 from telegram_alert import enviar_mensaje
 from urls import normalizar_url_anuncio
 from verificador import anuncio_activo
-from indicador_busqueda import iniciar_indicador, detener_indicador, set_estado_busqueda
+from indicador_busqueda import iniciar_indicador, detener, set_estado_busqueda
 
 # Importar bot interactivo
 try:
     from telegram_bot import start_telegram_thread
-    TELEGRAM_INTERACTIVE = True
+    TELEGRAM_INTERACTIVE = False  # Desactivado para evitar conflictos 409
 except ImportError:
     print("python-telegram-bot no instalado. Solo modo alertas.")
     TELEGRAM_INTERACTIVE = False
@@ -207,7 +207,7 @@ def main():
         time.sleep(30)
     finally:
         # Detener indicador visual
-        detener_indicador()
+        detener()
         print("Indicador visual detenido.")
 
 

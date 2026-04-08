@@ -77,9 +77,10 @@ def iniciar_indicador():
     """Iniciar el indicador visual"""
     indicador.iniciar()
     
-def detener_indicador():
+def detener():
     """Detener el indicador visual"""
-    indicador.detener()
+    global indicador
+    indicador.detener = True
     indicador.limpiar_linea()
     
 def set_estado_busqueda(estado):
