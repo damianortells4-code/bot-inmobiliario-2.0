@@ -16,6 +16,7 @@ class PuntuacionAnuncio:
     puntuacion_caracteristicas: float
     puntuacion_ubicacion: float
     puntuacion_descripcion: float
+    puntuacion_reciente: float
     detalles: Dict[str, float]
     fecha: str = ""
     fuente: str = ""
@@ -249,6 +250,7 @@ class AnalizadorAnuncios:
             puntuacion_caracteristicas=round(puntuacion_caracteristicas, 2),
             puntuacion_ubicacion=round(puntuacion_ubicacion, 2),
             puntuacion_descripcion=round(puntuacion_descripcion, 2),
+            puntuacion_reciente=round(puntuacion_reciente, 2),
             detalles=detalles,
             fuente=fuente
         )
