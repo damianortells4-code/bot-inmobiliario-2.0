@@ -72,7 +72,7 @@ def ciclo():
 
     # Puntuar anuncios
     print("Analizando y puntuando anuncios...")
-    anuncios_puntuados, resumen_puntuacion = puntuar_anuncios(anuncios_para_puntuar, puntuacion_minima=10.0)
+    anuncios_puntuados, resumen_puntuacion = puntuar_anuncios(anuncios_para_puntuar, puntuacion_minima=30.0)
     
     # Obtener mejores anuncios
     mejores_anuncios = obtener_mejores_anuncios(anuncios_para_puntuar, top_n=10)
@@ -92,8 +92,8 @@ def ciclo():
     vistos_ronda: set[str] = set()
     nuevos = 0
 
-    # Procesar TODOS los anuncios encontrados (no solo los mejores)
-    anuncios_a_procesar = anuncios_recientes[:15]  # Más anuncios procesados
+    # Procesar solo los MEJORES anuncios (calidad sobre cantidad)
+    anuncios_a_procesar = mejores_anuncios if mejores_anuncios else anuncios_recientes[:8]  # Menos pero mejores
     for anuncio in anuncios_a_procesar:
         titulo = anuncio['titulo']
         link = anuncio['link']
@@ -116,10 +116,9 @@ def ciclo():
         print("Detalles:", anuncio.detalles)
 
         # Verificar que el anuncio existe y está activo
-        # if not anuncio_activo(link):
-        #     print("Anuncio inactivo o eliminado, omitiendo.")
-        #     continue
-        # Desactivado temporalmente para encontrar más anuncios
+        if not anuncio_activo(link):
+            print("Anuncio inactivo o eliminado, omitiendo.")
+            continue
 
         # Verificar que es de particular
         if not es_particular(titulo):
@@ -155,7 +154,7 @@ Reciente: {anuncio.puntuacion_reciente}/100
     print(f"Timestamp: {datetime.now().strftime('%H:%M:%S')}")
     print(f"Total candidatos: {len(anuncios)}")
     print(f"Anuncios recientes: {len(anuncios_recientes)}")
-    print(f"Anuncios a procesar: {len(anuncios_a_procesar)} (hasta 15 por ronda)")
+    print(f"Anuncios de calidad: {len(anuncios_a_procesar)} (solo mejores)")
     print(f"Mejores anuncios: {len(mejores_anuncios)}")
     print(f"Nuevos notificados: {nuevos}")
     print(f"Próxima ronda en {config.INTERVALO_SEGUNDOS} segundos")
@@ -175,7 +174,7 @@ def main():
     print(f"Intervalo: {config.INTERVALO_SEGUNDOS} segundos")
     print(f"Zonas: {len(config.ZONAS)} configuradas")
     print(f"Fuentes: DDG={config.USAR_DUCKDUCKGO} | Pisos={config.USAR_PISOS} | Fotocasa={config.USAR_FOTOCASA} | Idealista={config.USAR_IDEALISTA} | Milanuncios={config.USAR_MILANUNCIOS}")
-    print(f"Puntuación mínima: 10/100")
+    print(f"Puntuación mínima: 30/100")
     print(f"Filtro recientes: 30 minutos")
     print("🔄 MODO CONTINUO - El bot nunca se detiene")
     print("💡 Para detener: Presiona Ctrl+C")
