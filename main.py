@@ -173,8 +173,10 @@ def main():
     print(f"Intervalo: {config.INTERVALO_SEGUNDOS} segundos")
     print(f"Zonas: {len(config.ZONAS)} configuradas")
     print(f"Fuentes: DDG={config.USAR_DUCKDUCKGO} | Pisos={config.USAR_PISOS} | Fotocasa={config.USAR_FOTOCASA} | Idealista={config.USAR_IDEALISTA} | Milanuncios={config.USAR_MILANUNCIOS}")
-    print(f"Puntuación mínima: 40/100")
+    print(f"Puntuación mínima: 20/100")
     print(f"Filtro recientes: 30 minutos")
+    print("🔄 MODO CONTINUO - El bot nunca se detiene")
+    print("💡 Para detener: Presiona Ctrl+C")
     print("·" * 60)
     
     # Iniciar bot interactivo de Telegram
@@ -193,22 +195,26 @@ def main():
     print("·" * 60)
     print()
     
-    try:
-        while True:
+    # Bucle infinito con reinicio automático
+    while True:
+        try:
             ciclo()
-            print(f" Esperando {config.INTERVALO_SEGUNDOS} segundos para próxima búsqueda...")
+            print(f"⏳ Esperando {config.INTERVALO_SEGUNDOS} segundos para próxima búsqueda...")
             time.sleep(config.INTERVALO_SEGUNDOS)
-    except KeyboardInterrupt:
-        print("\nBot detenido por el usuario.")
-        print("¡Hasta pronto!")
-    except Exception as e:
-        print(f"Error en ciclo: {e}")
-        print("Reiniciando ciclo en 30 segundos...")
-        time.sleep(30)
-    finally:
-        # Detener indicador visual
-        detener()
-        print("Indicador visual detenido.")
+        except KeyboardInterrupt:
+            print("\n🛑 Bot detenido por el usuario.")
+            print("👋 ¡Hasta pronto!")
+            break
+        except Exception as e:
+            print(f"❌ Error en ciclo: {e}")
+            print("🔄 Reiniciando ciclo en 10 segundos...")
+            time.sleep(10)
+            print("🚀 Reanudando búsqueda...")
+            continue
+    
+    # Detener indicador visual
+    detener()
+    print("Indicador visual detenido.")
 
 
 def keep_alive():
