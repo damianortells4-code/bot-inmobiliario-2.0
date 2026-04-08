@@ -120,7 +120,7 @@ def ciclo():
             continue
 
         # Verificar que es de particular
-        if not es_particular(titulo, link):
+        if not es_particular(titulo):
             print("Inmobiliaria filtrada")
             continue
 
