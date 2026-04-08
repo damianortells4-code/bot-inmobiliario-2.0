@@ -1,7 +1,18 @@
 import sys
-import time
 import os
 
+# Configurar automáticamente el entorno para encontrar los paquetes
+global_paths = [
+    '/Users/damianortells/Library/Python/3.9/lib/python/site-packages',
+    '/usr/local/lib/python3.9/site-packages',
+    '/usr/lib/python3.9/site-packages'
+]
+
+for path in global_paths:
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
+import time
 import config
 from database import anuncio_existente, guardar_anuncio
 from filtros import es_particular
