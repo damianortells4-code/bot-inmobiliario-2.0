@@ -121,9 +121,10 @@ def ciclo():
             continue
 
         # Verificar que es de particular
-        if not es_particular(titulo):
-            print("Inmobiliaria filtrada")
-            continue
+        # if not es_particular(titulo):
+        #     print("Inmobiliaria filtrada")
+        #     continue
+        # Desactivado temporalmente - el filtro falla demasiado
 
         set_estado_busqueda("notificando")
         mensaje = f"""¡MEJOR ANUNCIO DE PARTICULAR! 
