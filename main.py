@@ -13,7 +13,7 @@ for path in global_paths:
         sys.path.insert(0, path)
 
 import time
-import datetime
+from datetime import datetime
 import config
 from database import anuncio_existente, guardar_anuncio
 from filtros import es_particular
