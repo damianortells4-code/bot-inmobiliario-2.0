@@ -72,7 +72,7 @@ def ciclo():
 
     # Puntuar anuncios
     print("Analizando y puntuando anuncios...")
-    anuncios_puntuados, resumen_puntuacion = puntuar_anuncios(anuncios_para_puntuar, puntuacion_minima=30.0)
+    anuncios_puntuados, resumen_puntuacion = puntuar_anuncios(anuncios_para_puntuar, puntuacion_minima=20.0)
     
     # Obtener mejores anuncios
     mejores_anuncios = obtener_mejores_anuncios(anuncios_para_puntuar, top_n=10)
@@ -134,14 +134,13 @@ Precio: {anuncio.puntuacion_precio}/100
 Características: {anuncio.puntuacion_caracteristicas}/100
 Ubicación: {anuncio.puntuacion_ubicacion}/100
 Descripción: {anuncio.puntuacion_descripcion}/100
-Reciente: {anuncio.puntuacion_reciente}/100
 
 {titulo}
 
 {clave}
 """
         enviar_mensaje(mensaje)
-        guardar_anuncio(clave, titulo, link)
+        guardar_anuncio(link, titulo)
         nuevos += 1
         set_estado_busqueda("analizando")
 
@@ -175,7 +174,7 @@ def main():
     print(f"Intervalo: {config.INTERVALO_SEGUNDOS} segundos")
     print(f"Zonas: {len(config.ZONAS)} configuradas")
     print(f"Fuentes: DDG={config.USAR_DUCKDUCKGO} | Pisos={config.USAR_PISOS} | Fotocasa={config.USAR_FOTOCASA} | Idealista={config.USAR_IDEALISTA} | Milanuncios={config.USAR_MILANUNCIOS}")
-    print(f"Puntuación mínima: 30/100")
+    print(f"Puntuación mínima: 20/100")
     print(f"Filtro recientes: 30 minutos")
     print("🔄 MODO CONTINUO - El bot nunca se detiene")
     print("💡 Para detener: Presiona Ctrl+C")
