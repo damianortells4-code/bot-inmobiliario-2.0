@@ -25,13 +25,15 @@ from urls import normalizar_url_anuncio
 from verificador import anuncio_activo
 from indicador_busqueda import iniciar_indicador, detener, set_estado_busqueda
 
-# Importar bot interactivo
-try:
-    from telegram_bot import start_telegram_thread
-    TELEGRAM_INTERACTIVE = False  # Desactivado para evitar conflictos 409
-except ImportError:
-    print("python-telegram-bot no instalado. Solo modo alertas.")
-    TELEGRAM_INTERACTIVE = False
+# Importar bot interactivo (completamente desactivado)
+# try:
+#     from telegram_bot import start_telegram_thread
+#     TELEGRAM_INTERACTIVE = False  # Desactivado para evitar conflictos 409
+# except ImportError:
+#     print("python-telegram-bot no instalado. Solo modo alertas.")
+
+# Forzar desactivación completa
+TELEGRAM_INTERACTIVE = False
 
 
 def ciclo():
@@ -179,12 +181,12 @@ def main():
     print("💡 Para detener: Presiona Ctrl+C")
     print("·" * 60)
     
-    # Iniciar bot interactivo de Telegram
+    # Iniciar bot interactivo de Telegram (completamente desactivado)
     if TELEGRAM_INTERACTIVE:
         print("Iniciando bot interactivo de Telegram...")
-        start_telegram_thread()
+        # start_telegram_thread()  # Completamente desactivado
     else:
-        print("Modo alertas Telegram activado")
+        print("Modo alertas Telegram activado (sin errores 409)")
     
     # Iniciar indicador visual
     print("Iniciando indicador visual de búsqueda...")
