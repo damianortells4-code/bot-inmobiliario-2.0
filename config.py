@@ -8,7 +8,7 @@ Cada zona define el slug que usa cada portal (no son intercambiables).
 DB_PATH = "anuncios.db"
 
 # --- Bucle principal (segundos entre rondas de búsqueda) ---
-INTERVALO_SEGUNDOS = 120  # 2 minutos (más velocidad con seguridad extra)
+INTERVALO_SEGUNDOS = 86400  # 1 día (búsqueda diaria profunda)
 
 # --- Límite por fuente (None = sin límite; útil para pruebas) ---
 # Ejemplo: MAX_ANUNCIOS_POR_FUENTE = 20

@@ -157,7 +157,7 @@ Descripción: {anuncio.puntuacion_descripcion}/100
     print(f"Anuncios de calidad: {len(anuncios_a_procesar)} (solo mejores)")
     print(f"Mejores anuncios: {len(mejores_anuncios)}")
     print(f"Nuevos notificados: {nuevos}")
-    print(f"Próxima ronda en {config.INTERVALO_SEGUNDOS} segundos")
+    print(f"Próxima ronda en 1 día")
     print("·" * 60)
     print()
     
@@ -171,7 +171,7 @@ def main():
     print("·" * 60)
     print(f"Timestamp: {datetime.now().strftime('%H:%M:%S %d/%m/%Y')}")
     print(f"Base de datos: {config.DB_PATH}")
-    print(f"Intervalo: {config.INTERVALO_SEGUNDOS} segundos")
+    print(f"Intervalo: {config.INTERVALO_SEGUNDOS} segundos (1 día)")
     print(f"Zonas: {len(config.ZONAS)} configuradas")
     print(f"Fuentes: DDG={config.USAR_DUCKDUCKGO} | Pisos={config.USAR_PISOS} | Fotocasa={config.USAR_FOTOCASA} | Idealista={config.USAR_IDEALISTA} | Milanuncios={config.USAR_MILANUNCIOS}")
     print(f"Puntuación mínima: 20/100")
@@ -200,7 +200,7 @@ def main():
     while True:
         try:
             ciclo()
-            print(f"⏳ Esperando {config.INTERVALO_SEGUNDOS} segundos para próxima búsqueda...")
+            print(f"⏳ Esperando 1 día para próxima búsqueda...")
             time.sleep(config.INTERVALO_SEGUNDOS)
         except KeyboardInterrupt:
             print("\n🛑 Bot detenido por el usuario.")
