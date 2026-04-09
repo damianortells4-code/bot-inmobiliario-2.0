@@ -54,11 +54,10 @@ def ciclo():
     anuncios = buscar_internet()
     print("Candidatos tras scrapers:", len(anuncios))
 
-    # Filtrar por tiempo (últimos 30 minutos)
-    print("Filtrando anuncios recientes...")
-    set_estado_busqueda("analizando")
-    anuncios_recientes = filtrar_anuncios_recientes(anuncios, max_minutos=30)
-    print(f"Anuncios recientes: {len(anuncios_recientes)}")
+    # Filtrar por tiempo (anuncios de hoy - últimas 24 horas)
+    print("Filtrando anuncios de hoy...")
+    anuncios_recientes = filtrar_anuncios_recientes(anuncios, max_minutos=1440)  # 24 horas
+    print(f"Anuncios de hoy: {len(anuncios_recientes)} (últimas 24h)")
 
     # Convertir anuncios a formato para puntuación
     anuncios_para_puntuar = []
@@ -153,11 +152,11 @@ Descripción: {anuncio.puntuacion_descripcion}/100
     print("CICLO COMPLETADO")
     print(f"Timestamp: {datetime.now().strftime('%H:%M:%S')}")
     print(f"Total candidatos: {len(anuncios)}")
-    print(f"Anuncios recientes: {len(anuncios_recientes)}")
+    print(f"Anuncios de hoy: {len(anuncios_recientes)} (últimas 24h)")
     print(f"Anuncios de calidad: {len(anuncios_a_procesar)} (solo mejores)")
     print(f"Mejores anuncios: {len(mejores_anuncios)}")
     print(f"Nuevos notificados: {nuevos}")
-    print(f"Próxima ronda en 1 día")
+    print(f"Próxima ronda en 2 minutos")
     print("·" * 60)
     print()
     
@@ -171,11 +170,11 @@ def main():
     print("·" * 60)
     print(f"Timestamp: {datetime.now().strftime('%H:%M:%S %d/%m/%Y')}")
     print(f"Base de datos: {config.DB_PATH}")
-    print(f"Intervalo: {config.INTERVALO_SEGUNDOS} segundos (1 día)")
+    print(f"Intervalo: {config.INTERVALO_SEGUNDOS} segundos (2 min)")
     print(f"Zonas: {len(config.ZONAS)} configuradas")
     print(f"Fuentes: DDG={config.USAR_DUCKDUCKGO} | Pisos={config.USAR_PISOS} | Fotocasa={config.USAR_FOTOCASA} | Idealista={config.USAR_IDEALISTA} | Milanuncios={config.USAR_MILANUNCIOS}")
     print(f"Puntuación mínima: 20/100")
-    print(f"Filtro recientes: 30 minutos")
+    print(f"Filtro: anuncios de hoy (últimas 24h)")
     print("🔄 MODO CONTINUO - El bot nunca se detiene")
     print("💡 Para detener: Presiona Ctrl+C")
     print("·" * 60)
@@ -200,7 +199,7 @@ def main():
     while True:
         try:
             ciclo()
-            print(f"⏳ Esperando 1 día para próxima búsqueda...")
+            print(f"⏳ Esperando 2 minutos para próxima búsqueda...")
             time.sleep(config.INTERVALO_SEGUNDOS)
         except KeyboardInterrupt:
             print("\n🛑 Bot detenido por el usuario.")
