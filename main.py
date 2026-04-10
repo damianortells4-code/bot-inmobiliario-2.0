@@ -46,7 +46,7 @@ def ciclo():
     print(f"Zonas: {len(config.ZONAS)} configuradas (Rubí, Sant Cugat, Sabadell, Terrassa)")
     print(f"Intervalo: {config.INTERVALO_SEGUNDOS} segundos")
     print(f"Exigir palabra de particular: {config.EXIGIR_PALABRA_PARTICULAR_EN_TITULO}")
-    print("Anuncios recientes: últimos 30 minutos")
+    print("Anuncios recientes: últimas 24 horas")
     if config.MAX_ANUNCIOS_POR_FUENTE is not None:
         print(f"Límite por fuente (pruebas): {config.MAX_ANUNCIOS_POR_FUENTE}")
     print("·" * 60)

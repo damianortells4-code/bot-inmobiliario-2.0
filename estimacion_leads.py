@@ -18,7 +18,7 @@ def estimar_leads_diarios():
             'anuncios_por_ciclo': 15,
             'porcentaje_particulares': 0.15,  # 15% son particulares
             'porcentaje_calidad': 0.60,       # 60% pasan filtro de calidad (40+ puntos)
-            'porcentaje_recientes': 0.30,      # 30% son de últimos 30 minutos
+            'porcentaje_recientes': 0.30,      # 30% son de últimas 24 horas
             'leads_buenos_por_ciclo': 15 * 0.15 * 0.60 * 0.30  # ~0.4 leads
         },
         'Pisos.com': {
