@@ -93,11 +93,11 @@ def ciclo():
     vistos_ronda: set[str] = set()
     nuevos = 0
 
-    # Procesar más anuncios para encontrar particulares
-    anuncios_a_procesar = anuncios_recientes[:20]  # Más anuncios para encontrar particulares
+    # Procesar anuncios puntuados para encontrar particulares
+    anuncios_a_procesar = mejores_anuncios[:20]  # Usar los mejores anuncios puntuados
     for anuncio in anuncios_a_procesar:
-        titulo = anuncio['titulo']
-        link = anuncio['link']
+        titulo = anuncio.titulo
+        link = anuncio.link
 
         clave = normalizar_url_anuncio(link)
         if not clave:
