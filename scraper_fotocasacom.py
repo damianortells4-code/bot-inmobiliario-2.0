@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 
-from portales_comun import get_random_headers, REQUEST_TIMEOUT
+from portales_comun import get_random_headers, REQUEST_TIMEOUT, pausa_entre_peticiones, verificar_y_pausar_si_necesario
 
 
 def buscar_anuncios(zona="rubi", max_anuncios=None):
@@ -48,6 +48,11 @@ def buscar_anuncios(zona="rubi", max_anuncios=None):
         })
         
         response = requests.get(base_url, headers=headers, timeout=REQUEST_TIMEOUT)
+        
+        # Verificar si hay bloqueo
+        if verificar_y_pausar_si_necesario(response, "Fotocasacom"):
+            return anuncios  # Retornar vacío si hay bloqueo
+        
         response.raise_for_status()
         
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -115,7 +120,7 @@ def buscar_anuncios(zona="rubi", max_anuncios=None):
                 })
                 
                 # Pausa entre anuncios
-                time.sleep(random.uniform(0.5, 1.5))
+                pausa_entre_peticiones()
                 
             except Exception as e:
                 print(f"Error procesando anuncio Fotocasacom: {e}")

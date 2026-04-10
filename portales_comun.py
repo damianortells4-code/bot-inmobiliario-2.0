@@ -292,20 +292,45 @@ PALABRAS_INMOBILIARIA = [
 ]
 
 USER_AGENTS = [
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3.1 Safari/605.1.15",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:121.0) Gecko/20100101 Firefox/121.0",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Safari/605.1.15",
+    "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/120.0.0.0",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:119.0) Gecko/20100101 Firefox/119.0",
 ]
 
 def get_random_headers():
     """Genera headers aleatorios para evitar detección"""
-    return {
+    headers = {
         "User-Agent": random.choice(USER_AGENTS),
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-        "Accept-Language": random.choice(["es-ES,es;q=0.9,en;q=0.8", "en-US,en;q=0.9,es;q=0.8", "es-ES,es;q=0.9,en-GB;q=0.8,en;q=0.7"]),
-        "Accept-Encoding": "gzip, deflate, br",
+        "Accept": random.choice([
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8"
+        ]),
+        "Accept-Language": random.choice([
+            "es-ES,es;q=0.9,en;q=0.8",
+            "en-US,en;q=0.9,es;q=0.8", 
+            "es-ES,es;q=0.9,en-GB;q=0.8,en;q=0.7",
+            "es-ES,es;q=0.8,en;q=0.5",
+            "en-GB,en;q=0.9,es;q=0.8"
+        ]),
+        "Accept-Encoding": random.choice([
+            "gzip, deflate, br",
+            "gzip, deflate",
+            "gzip, deflate, br, zstd"
+        ]),
         "DNT": "1",
         "Connection": "keep-alive",
         "Upgrade-Insecure-Requests": "1",
@@ -313,8 +338,23 @@ def get_random_headers():
         "Sec-Fetch-Mode": "navigate",
         "Sec-Fetch-Site": "none",
         "Sec-Fetch-User": "?1",
-        "Cache-Control": "max-age=0",
+        "Cache-Control": random.choice([
+            "max-age=0",
+            "no-cache",
+            "no-store, max-age=0"
+        ])
     }
+    
+    # Añadir headers opcionales aleatoriamente
+    if random.random() < 0.3:  # 30% de probabilidad
+        headers["Sec-GPC"] = "1"  # Global Privacy Control
+    
+    if random.random() < 0.2:  # 20% de probabilidad
+        headers["Sec-CH-UA"] = '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"'
+        headers["Sec-CH-UA-Mobile"] = "?0"
+        headers["Sec-CH-UA-Platform"] = random.choice(['"Windows"', '"macOS"', '"Linux"'])
+    
+    return headers
 
 REQUEST_TIMEOUT = 25
 
@@ -325,29 +365,79 @@ def pausa_entre_peticiones():
     pausa = random.uniform(config.SCRAPER_PAUSA_MIN, config.SCRAPER_PAUSA_MAX)
     
     # Añadir variación extra para evitar patrones
-    if random.random() < 0.3:  # 30% de probabilidad de pausa extra
-        pausa += random.uniform(1.0, 3.0)
+    if random.random() < 0.4:  # 40% de probabilidad de pausa extra
+        pausa += random.uniform(2.0, 4.0)
+    
+    # 15% de probabilidad de pausa muy larga (simulación de lectura)
+    if random.random() < 0.15:
+        pausa += random.uniform(5.0, 8.0)
     
     print(f"   (pausa {pausa:.1f}s)")
     time.sleep(pausa)
 
 
 def pausa_entre_fuentes():
-    """Entre pisos / fotocasa / DDG para no encadenar ráfagas."""
-    mn = float(getattr(config, "PAUSA_ENTRE_FUENTES_MIN", 8.0))
-    mx = float(getattr(config, "PAUSA_ENTRE_FUENTES_MAX", 18.0))
+    """Entre portales para no encadenar ráfagas."""
+    mn = float(getattr(config, "PAUSA_ENTRE_FUENTES_MIN", 18.0))
+    mx = float(getattr(config, "PAUSA_ENTRE_FUENTES_MAX", 30.0))
     if mx < mn:
         mx = mn
     
-    # Pausa con variación extra
+    # Pausa base con variación extra
     pausa = random.uniform(mn, mx)
     
-    # 25% de probabilidad de pausa extra larga
-    if random.random() < 0.25:
-        pausa += random.uniform(2.0, 5.0)
+    # 35% de probabilidad de pausa extra larga
+    if random.random() < 0.35:
+        pausa += random.uniform(3.0, 7.0)
+    
+    # 10% de probabilidad de pausa muy larga (simulación de cambio de portal)
+    if random.random() < 0.10:
+        pausa += random.uniform(8.0, 12.0)
     
     print(f"   (pausa entre fuentes {pausa:.1f}s)")
     time.sleep(pausa)
+
+
+def pausa_larga_aleatoria():
+    """Pausa larga aleatoria para evitar detección prolongada."""
+    # Pausa de 30-90 segundos aleatoria
+    pausa = random.uniform(30.0, 90.0)
+    
+    print(f"   (pausa larga anti-bloqueo {pausa:.1f}s)")
+    time.sleep(pausa)
+
+
+def verificar_y_pausar_si_necesario(respuesta, portal_nombre=""):
+    """Verifica si hay respuesta de bloqueo y pausa si es necesario."""
+    
+    # Verificar códigos de bloqueo comunes
+    bloqueo_codes = [429, 403, 503, 502, 418]
+    
+    if respuesta.status_code in bloqueo_codes:
+        print(f"   (!) Posible bloqueo en {portal_nombre} (código {respuesta.status_code})")
+        pausa_larga_aleatoria()
+        return True
+    
+    # Verificar texto de bloqueo en respuesta
+    texto_bloqueo = [
+        "too many requests",
+        "rate limit",
+        "blocked",
+        "captcha",
+        "access denied",
+        "forbidden",
+        "service unavailable",
+        "demasiadas solicitudes",
+        "bloqueado",
+        "captcha"
+    ]
+    
+    if any(palabra in respuesta.text.lower() for palabra in texto_bloqueo):
+        print(f"   (!) Texto de bloqueo detectado en {portal_nombre}")
+        pausa_larga_aleatoria()
+        return True
+    
+    return False
 
 
 def titulo_sugiere_inmobiliaria(titulo: str) -> bool:
