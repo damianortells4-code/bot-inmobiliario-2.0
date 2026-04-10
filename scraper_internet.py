@@ -14,6 +14,10 @@ from scraper_idealista import buscar_anuncios as buscar_idealista
 from scraper_pisos import buscar_anuncios as buscar_pisos
 from scraper_habitaclia import buscar_anuncios as buscar_habitaclia
 from scraper_milanuncios import buscar_anuncios as buscar_milanuncios
+from scraper_habitaclia_mejorado import buscar_anuncios as buscar_habitaclia_mejorado
+from scraper_fotocasacom import buscar_anuncios as buscar_fotocasacom
+from scraper_pisoscom import buscar_anuncios as buscar_pisoscom
+from scraper_idealista_pro import buscar_anuncios as buscar_idealista_pro
 
 from portales_comun import get_random_headers, pausa_entre_fuentes
 
@@ -137,6 +141,18 @@ def buscar_internet(
 
     if config.USAR_HABITACLIA:
         bloques.append(buscar_habitaclia())
+
+    if config.USAR_HABITACLIA_MEJORADO:
+        bloques.append(buscar_habitaclia_mejorado())
+
+    if config.USAR_FOTOCASACOM:
+        bloques.append(buscar_fotocasacom())
+
+    if config.USAR_PISOSCOM:
+        bloques.append(buscar_pisoscom())
+
+    if config.USAR_IDEALISTA_PRO:
+        bloques.append(buscar_idealista_pro())
 
     if config.USAR_MILANUNCIOS:
         bloques.append(buscar_milanuncios())

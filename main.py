@@ -42,7 +42,7 @@ def ciclo():
     print("BUSCANDO ANUNCIOS DE PARTICULARES")
     print("·" * 60)
     print(f"Timestamp: {datetime.now().strftime('%H:%M:%S')}")
-    print(f"Fuentes activas: DDG={config.USAR_DUCKDUCKGO} | Pisos={config.USAR_PISOS} | Fotocasa={config.USAR_FOTOCASA} | Idealista={config.USAR_IDEALISTA} | Milanuncios={config.USAR_MILANUNCIOS}")
+    print(f"Fuentes activas: DDG={config.USAR_DUCKDUCKGO} | Pisos={config.USAR_PISOS} | Fotocasa={config.USAR_FOTOCASA} | Idealista={config.USAR_IDEALISTA} | Habitaclia+={config.USAR_HABITACLIA_MEJORADO} | Fotocasacom={config.USAR_FOTOCASACOM} | Pisoscom={config.USAR_PISOSCOM} | IdealistaPro={config.USAR_IDEALISTA_PRO} | Milanuncios={config.USAR_MILANUNCIOS}")
     print(f"Zonas: {len(config.ZONAS)} configuradas (Rubí, Sant Cugat, Sabadell, Terrassa)")
     print(f"Intervalo: {config.INTERVALO_SEGUNDOS} segundos")
     print(f"Exigir palabra de particular: {config.EXIGIR_PALABRA_PARTICULAR_EN_TITULO}")

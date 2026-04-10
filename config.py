@@ -31,6 +31,10 @@ USAR_PISOS = True
 USAR_FOTOCASA = True
 USAR_IDEALISTA = True  # Activado para más anuncios
 USAR_HABITACLIA = False  # Desactivado por errores 404
+USAR_HABITACLIA_MEJORADO = True  # Nueva versión mejorada
+USAR_FOTOCASACOM = True  # Nuevo portal Fotocasacom
+USAR_PISOSCOM = True  # Nuevo portal Pisoscom
+USAR_IDEALISTA_PRO = True  # Versión profesional de Idealista
 USAR_MILANUNCIOS = True
 IDEALISTA_HEADLESS = True
 
@@ -42,20 +46,32 @@ ZONAS = [
         "fotocasa": "rubi",
         "idealista": "rubi-barcelona",
         "habitaclia": "rubi",
+        "habitaclia_mejorado": "rubi",
+        "fotocasacom": "rubi",
+        "pisoscom": "rubi",
+        "idealista_pro": "rubi-barcelona",
         "milanuncios": "rubi",
     },
     {
         "pisos": "sant_cugat_del_valles",
         "fotocasa": "sant-cugat-del-valles",
         "idealista": "sant-cugat-del-valles-barcelona",
-        "habitaclia": "sant-cugat-del-valles",
-        "milanuncios": "sant-cugat-del-valles",
+        "habitaclia": "sant_cugat",
+        "habitaclia_mejorado": "sant_cugat",
+        "fotocasacom": "sant_cugat",
+        "pisoscom": "sant_cugat",
+        "idealista_pro": "sant-cugat-del-valles-barcelona",
+        "milanuncios": "sant_cugat",
     },
     {
         "pisos": "sabadell",
         "fotocasa": "sabadell",
         "idealista": "sabadell-barcelona",
         "habitaclia": "sabadell",
+        "habitaclia_mejorado": "sabadell",
+        "fotocasacom": "sabadell",
+        "pisoscom": "sabadell",
+        "idealista_pro": "sabadell-barcelona",
         "milanuncios": "sabadell",
     },
     {
@@ -63,6 +79,10 @@ ZONAS = [
         "fotocasa": "terrassa",
         "idealista": "terrassa-barcelona",
         "habitaclia": "terrassa",
+        "habitaclia_mejorado": "terrassa",
+        "fotocasacom": "terrassa",
+        "pisoscom": "terrassa",
+        "idealista_pro": "terrassa-barcelona",
         "milanuncios": "terrassa",
     },
 ]
