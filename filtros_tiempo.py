@@ -75,9 +75,9 @@ def parse_fecha_texto(fecha_texto: str) -> Optional[datetime]:
     return None
 
 
-def es_anuncio_reciente(fecha_texto: str, max_minutos: int = 10) -> bool:
+def es_anuncio_reciente(fecha_texto: str, max_minutos: int = 1440) -> bool:
     """
-    Determina si un anuncio es reciente (por defecto últimos 10 minutos).
+    Determina si un anuncio es reciente (por defecto últimas 24 horas).
     """
     if not fecha_texto:
         # Si no hay fecha, asumir que es reciente
@@ -165,13 +165,13 @@ def extraer_fecha_anuncio(html_content: str, url: str) -> Optional[str]:
     return None
 
 
-def filtrar_anuncios_recientes(anuncios: list, max_minutos: int = 10) -> list:
+def filtrar_anuncios_recientes(anuncios: list, max_minutos: int = 1440) -> list:
     """
     Filtra anuncios para quedarse solo con los más recientes.
     
     Args:
         anuncios: Lista de anuncios con 'titulo' y 'link'
-        max_minutos: Máxima antigüedad en minutos (por defecto 10)
+        max_minutos: Máxima antigüedad en minutos (por defecto 1440 = 24 horas)
     
     Returns:
         Lista de anuncios recientes
