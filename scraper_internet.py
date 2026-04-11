@@ -15,6 +15,7 @@ from scraper_pisos import buscar_anuncios as buscar_pisos
 from scraper_habitaclia import buscar_anuncios as buscar_habitaclia
 from scraper_milanuncios import buscar_anuncios as buscar_milanuncios
 from scraper_habitaclia_mejorado import buscar_anuncios as buscar_habitaclia_mejorado
+from scraper_habitaclia_ultra_seguro import buscar_anuncios as buscar_habitaclia_ultra_seguro
 from scraper_fotocasacom import buscar_anuncios as buscar_fotocasacom
 from scraper_pisoscom import buscar_anuncios as buscar_pisoscom
 from scraper_idealista_pro import buscar_anuncios as buscar_idealista_pro
@@ -172,6 +173,13 @@ def buscar_internet(
         except Exception as e:
             registrar_error_portal("Habitaclia+", f"Error general: {str(e)}")
 
+    # Habitaclia Ultra Seguro
+    if config.USAR_HABITACLIA_ULTRA_SEGURO and not esta_portal_desactivado("Habitaclia Ultra"):
+        try:
+            bloques.append(buscar_habitaclia_ultra_seguro())
+        except Exception as e:
+            registrar_error_portal("Habitaclia Ultra", f"Error general: {str(e)}")
+
     # Fotocasacom
     if config.USAR_FOTOCASACOM and not esta_portal_desactivado("Fotocasacom"):
         try:
@@ -201,7 +209,7 @@ def buscar_internet(
             registrar_error_portal("Milanuncios", f"Error general: {str(e)}")
     
     # Mostrar portales desactivados
-    portales_desactivados = [portal for portal in ["DuckDuckGo", "Pisos", "Fotocasa", "Idealista", "Habitaclia", "Habitaclia+", "Fotocasacom", "Pisoscom", "IdealistaPro", "Milanuncios"] if esta_portal_desactivado(portal)]
+    portales_desactivados = [portal for portal in ["DuckDuckGo", "Pisos", "Fotocasa", "Idealista", "Habitaclia", "Habitaclia+", "Habitaclia Ultra", "Fotocasacom", "Pisoscom", "IdealistaPro", "Milanuncios"] if esta_portal_desactivado(portal)]
     if portales_desactivados:
         print(f"Portales desactivados temporalmente: {', '.join(portales_desactivados)}")
 
