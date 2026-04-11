@@ -63,7 +63,6 @@ PALABRAS_INMOBILIARIA = [
     "administrador",
     "administradora",
     "administradores",
-    "fincas",
     "real estate",
     "realstate",
     "inmob",
@@ -164,34 +163,8 @@ PALABRAS_INMOBILIARIA = [
     "property",
     "viviendas",
     "vivienda",
-    "piso",
-    "pisos",
-    "chalet",
-    "chalets",
-    "ático",
-    "aticos",
-    "dúplex",
-    "duplex",
-    "estudio",
-    "estudios",
-    "loft",
-    "lofts",
-    "garaje",
-    "garajes",
-    "trastero",
-    "trasteros",
-    "local",
-    "locales",
-    "oficina",
-    "oficinas",
-    "nave",
-    "naves",
-    "terreno",
-    "terrenos",
     "solar",
     "solares",
-    "finca",
-    "fincas",
     "parcela",
     "parcelas",
     "rustica",
@@ -555,12 +528,57 @@ def limpiar_portales_desactivados():
 
 def titulo_sugiere_inmobiliaria(titulo: str) -> bool:
     t = titulo.lower()
+    
+    # Palabras que son muy comunes en anuncios de particulares y no deben filtrarse
+    palabras_excluidas = {
+        'finca', 'fincas', 'piso', 'pisos', 'chalet', 'chalets', 
+        'ático', 'aticos', 'dúplex', 'duplex', 'estudio', 'estudios',
+        'loft', 'lofts', 'garaje', 'garajes', 'trastero', 'trasteros',
+        'local', 'locales', 'oficina', 'oficinas', 'nave', 'naves',
+        'terreno', 'terrenos', 'solar', 'solares', 'parcela', 'parcelas',
+        'rustica', 'rustico', 'rústica', 'rústico'
+    }
+    
+    # Palabras que sí indican inmobiliaria con alta certeza
+    palabras_inmobiliaria_fuertes = {
+        'inmobiliaria', 'inmobiliarias', 'inmob', 'inmo', 'inmo.', 'inmob.',
+        'remax', 'engel', 'coldwell', 'keller williams', 'century 21',
+        'nova finques', 'cèntric finques', 'aproperties', 'api properties',
+        'goldmark', 'signature luxury homes', 'finques', 'real estate',
+        'properties', 'property', 'realstate', 'estate'
+    }
+    
+    # Primero verificar si hay palabras fuertes de inmobiliaria
+    for palabra in palabras_inmobiliaria_fuertes:
+        if palabra in t:
+            return True
+    
+    # Luego verificar otras palabras pero excluyendo las comunes de propiedades
     for palabra in PALABRAS_INMOBILIARIA:
         # Solo filtrar palabras de más de 3 caracteres para evitar falsos positivos
         if len(palabra) <= 3:
             continue
+        
+        # Si la palabra está en la lista de exclusiones, ignorarla
+        if palabra in palabras_excluidas:
+            continue
+            
+        # Verificar que la palabra no esté en un contexto de propiedad
         if palabra in t:
+            # Contextos donde la palabra podría ser legítima de particular
+            contextos_legitimos = [
+                'venta de', 'alquiler de', 'particular', 'propietario',
+                'dueño', 'particulares', 'directo', 'sin comisión',
+                'sin intermediario', 'particular a particular'
+            ]
+            
+            # Si hay algún contexto legítimo, no filtrar
+            if any(ctx in t for ctx in contextos_legitimos):
+                continue
+                
+            # Si no hay contexto legítimo, filtrar
             return True
+    
     return False
 
 
