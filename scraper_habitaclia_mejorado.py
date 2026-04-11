@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 
-from portales_comun import get_random_headers, REQUEST_TIMEOUT, pausa_entre_peticiones
+from portales_comun import get_random_headers, REQUEST_TIMEOUT, pausa_entre_peticiones, verificar_y_pausar_si_necesario, manejar_error_http
 
 
 def buscar_anuncios(zona="rubi", max_anuncios=None):
@@ -49,8 +49,12 @@ def buscar_anuncios(zona="rubi", max_anuncios=None):
         
         response = requests.get(base_url, headers=headers, timeout=REQUEST_TIMEOUT)
         
-        # Verificar si hay bloqueo
-        from portales_comun import verificar_y_pausar_si_necesario
+        # Manejar específicamente errores 404/403
+        error_tipo = manejar_error_http(response, "Habitaclia")
+        if error_tipo:
+            return anuncios  # Retornar vacío si hay error
+        
+        # Verificar otros tipos de bloqueo
         if verificar_y_pausar_si_necesario(response, "Habitaclia"):
             return anuncios  # Retornar vacío si hay bloqueo
         

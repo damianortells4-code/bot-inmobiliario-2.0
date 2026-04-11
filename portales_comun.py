@@ -411,10 +411,16 @@ def verificar_y_pausar_si_necesario(respuesta, portal_nombre=""):
     """Verifica si hay respuesta de bloqueo y pausa si es necesario."""
     
     # Verificar códigos de bloqueo comunes
-    bloqueo_codes = [429, 403, 503, 502, 418]
+    bloqueo_codes = [429, 403, 503, 502, 418, 404]  # Añadir 404
     
     if respuesta.status_code in bloqueo_codes:
-        print(f"   (!) Posible bloqueo en {portal_nombre} (código {respuesta.status_code})")
+        if respuesta.status_code == 404:
+            print(f"   (!) Error 404 en {portal_nombre} - página no encontrada (posible bloqueo)")
+        elif respuesta.status_code == 403:
+            print(f"   (!) Error 403 en {portal_nombre} - acceso prohibido (bloqueo activo)")
+        else:
+            print(f"   (!) Posible bloqueo en {portal_nombre} (código {respuesta.status_code})")
+        
         pausa_larga_aleatoria()
         return True
     
@@ -429,7 +435,12 @@ def verificar_y_pausar_si_necesario(respuesta, portal_nombre=""):
         "service unavailable",
         "demasiadas solicitudes",
         "bloqueado",
-        "captcha"
+        "captcha",
+        "not found",
+        "page not found",
+        "acceso denegado",
+        "prohibido",
+        "restringido"
     ]
     
     if any(palabra in respuesta.text.lower() for palabra in texto_bloqueo):
@@ -438,6 +449,108 @@ def verificar_y_pausar_si_necesario(respuesta, portal_nombre=""):
         return True
     
     return False
+
+
+def manejar_error_http(respuesta, portal_nombre=""):
+    """Maneja específicamente errores HTTP comunes."""
+    
+    if respuesta.status_code == 404:
+        print(f"   [404] {portal_nombre}: Página no encontrada - posible cambio de URL o bloqueo")
+        # Pausa más larga para 404
+        pausa = random.uniform(60.0, 120.0)  # 1-2 minutos
+        print(f"   (pausa por 404: {pausa:.1f}s)")
+        time.sleep(pausa)
+        return "bloqueo_temporal"
+    
+    elif respuesta.status_code == 403:
+        print(f"   [403] {portal_nombre}: Acceso prohibido - bloqueo activo")
+        # Pausa muy larga para 403
+        pausa = random.uniform(120.0, 300.0)  # 2-5 minutos
+        print(f"   (pausa por 403: {pausa:.1f}s)")
+        time.sleep(pausa)
+        return "bloqueo_fuerte"
+    
+    elif respuesta.status_code == 429:
+        print(f"   [429] {portal_nombre}: Demasiadas peticiones - rate limit")
+        # Pausa estándar para 429
+        pausa_larga_aleatoria()
+        return "rate_limit"
+    
+    elif respuesta.status_code in [500, 502, 503]:
+        print(f"   [{respuesta.status_code}] {portal_nombre}: Error del servidor")
+        # Pausa moderada para errores de servidor
+        pausa = random.uniform(30.0, 60.0)  # 30-60 segundos
+        print(f"   (pausa por error {respuesta.status_code}: {pausa:.1f}s)")
+        time.sleep(pausa)
+        return "error_servidor"
+    
+    return None
+
+
+# Sistema de desactivación temporal de portales
+PORTALES_ERROR_COUNT = {}
+PORTALES_DESACTIVADOS_TEMP = {}
+MAX_ERRORES_PORTAL = 3  # Máximo de errores antes de desactivar
+TIEMPO_DESACTIVACION = 1800  # 30 minutos en segundos
+
+
+def registrar_error_portal(portal_nombre: str, tipo_error: str):
+    """Registra errores de un portal y desactiva si hay demasiados."""
+    
+    # Incrementar contador de errores
+    PORTALES_ERROR_COUNT[portal_nombre] = PORTALES_ERROR_COUNT.get(portal_nombre, 0) + 1
+    
+    print(f"   [ERROR] {portal_nombre}: {tipo_error} (total: {PORTALES_ERROR_COUNT[portal_nombre]})")
+    
+    # Verificar si se debe desactivar temporalmente
+    if PORTALES_ERROR_COUNT[portal_nombre] >= MAX_ERRORES_PORTAL:
+        print(f"   [DESACTIVADO] {portal_nombre}: Demasiados errores ({PORTALES_ERROR_COUNT[portal_nombre]})")
+        print(f"   [DESACTIVADO] {portal_nombre}: Desactivado por 30 minutos")
+        
+        # Desactivar temporalmente
+        PORTALES_DESACTIVADOS_TEMP[portal_nombre] = time.time() + TIEMPO_DESACTIVACION
+        
+        # Resetear contador
+        PORTALES_ERROR_COUNT[portal_nombre] = 0
+        
+        return True  # Portal desactivado
+    
+    return False  # Portal sigue activo
+
+
+def esta_portal_desactivado(portal_nombre: str) -> bool:
+    """Verifica si un portal está desactivado temporalmente."""
+    
+    if portal_nombre not in PORTALES_DESACTIVADOS_TEMP:
+        return False
+    
+    # Verificar si ya pasó el tiempo de desactivación
+    tiempo_reactivacion = PORTALES_DESACTIVADOS_TEMP[portal_nombre]
+    
+    if time.time() >= tiempo_reactivacion:
+        # Reactivar portal
+        print(f"   [REACTIVADO] {portal_nombre}: Reactivado después de 30 minutos")
+        del PORTALES_DESACTIVADOS_TEMP[portal_nombre]
+        PORTALES_ERROR_COUNT[portal_nombre] = 0  # Resetear contador
+        return False
+    
+    return True  # Sigue desactivado
+
+
+def limpiar_portales_desactivados():
+    """Limpia portales cuyo tiempo de desactivación ha expirado."""
+    
+    portales_a_eliminar = []
+    tiempo_actual = time.time()
+    
+    for portal, tiempo_reactivacion in PORTALES_DESACTIVADOS_TEMP.items():
+        if tiempo_actual >= tiempo_reactivacion:
+            portales_a_eliminar.append(portal)
+            print(f"   [REACTIVADO] {portal}: Reactivado automáticamente")
+            PORTALES_ERROR_COUNT[portal] = 0
+    
+    for portal in portales_a_eliminar:
+        del PORTALES_DESACTIVADOS_TEMP[portal]
 
 
 def titulo_sugiere_inmobiliaria(titulo: str) -> bool:

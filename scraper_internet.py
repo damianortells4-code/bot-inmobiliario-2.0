@@ -19,7 +19,7 @@ from scraper_fotocasacom import buscar_anuncios as buscar_fotocasacom
 from scraper_pisoscom import buscar_anuncios as buscar_pisoscom
 from scraper_idealista_pro import buscar_anuncios as buscar_idealista_pro
 
-from portales_comun import get_random_headers, pausa_entre_fuentes
+from portales_comun import get_random_headers, pausa_entre_fuentes, esta_portal_desactivado, limpiar_portales_desactivados, registrar_error_portal
 
 
 def _url_real_desde_duckduckgo(href: str) -> str:
@@ -125,37 +125,85 @@ def buscar_internet(
     Junta fuentes y elimina URLs duplicadas.
     Si un argumento es None, se usa el valor en config.py.
     """
+    # Limpiar portales desactivados cuyo tiempo ha expirado
+    limpiar_portales_desactivados()
+    
     bloques = []
 
-    if config.USAR_DUCKDUCKGO:
-        bloques.append(buscar_duckduckgo())
+    # DuckDuckGo
+    if config.USAR_DUCKDUCKGO and not esta_portal_desactivado("DuckDuckGo"):
+        try:
+            bloques.append(buscar_duckduckgo())
+        except Exception as e:
+            registrar_error_portal("DuckDuckGo", f"Error general: {str(e)}")
 
-    if config.USAR_PISOS:
-        bloques.append(buscar_pisos())
+    # Pisos.com
+    if config.USAR_PISOS and not esta_portal_desactivado("Pisos"):
+        try:
+            bloques.append(buscar_pisos())
+        except Exception as e:
+            registrar_error_portal("Pisos", f"Error general: {str(e)}")
 
-    if config.USAR_FOTOCASA:
-        bloques.append(buscar_fotocasa())
+    # Fotocasa
+    if config.USAR_FOTOCASA and not esta_portal_desactivado("Fotocasa"):
+        try:
+            bloques.append(buscar_fotocasa())
+        except Exception as e:
+            registrar_error_portal("Fotocasa", f"Error general: {str(e)}")
 
-    if config.USAR_IDEALISTA:
-        bloques.append(buscar_idealista())
+    # Idealista
+    if config.USAR_IDEALISTA and not esta_portal_desactivado("Idealista"):
+        try:
+            bloques.append(buscar_idealista())
+        except Exception as e:
+            registrar_error_portal("Idealista", f"Error general: {str(e)}")
 
-    if config.USAR_HABITACLIA:
-        bloques.append(buscar_habitaclia())
+    # Habitaclia
+    if config.USAR_HABITACLIA and not esta_portal_desactivado("Habitaclia"):
+        try:
+            bloques.append(buscar_habitaclia())
+        except Exception as e:
+            registrar_error_portal("Habitaclia", f"Error general: {str(e)}")
 
-    if config.USAR_HABITACLIA_MEJORADO:
-        bloques.append(buscar_habitaclia_mejorado())
+    # Habitaclia Mejorado
+    if config.USAR_HABITACLIA_MEJORADO and not esta_portal_desactivado("Habitaclia+"):
+        try:
+            bloques.append(buscar_habitaclia_mejorado())
+        except Exception as e:
+            registrar_error_portal("Habitaclia+", f"Error general: {str(e)}")
 
-    if config.USAR_FOTOCASACOM:
-        bloques.append(buscar_fotocasacom())
+    # Fotocasacom
+    if config.USAR_FOTOCASACOM and not esta_portal_desactivado("Fotocasacom"):
+        try:
+            bloques.append(buscar_fotocasacom())
+        except Exception as e:
+            registrar_error_portal("Fotocasacom", f"Error general: {str(e)}")
 
-    if config.USAR_PISOSCOM:
-        bloques.append(buscar_pisoscom())
+    # Pisoscom
+    if config.USAR_PISOSCOM and not esta_portal_desactivado("Pisoscom"):
+        try:
+            bloques.append(buscar_pisoscom())
+        except Exception as e:
+            registrar_error_portal("Pisoscom", f"Error general: {str(e)}")
 
-    if config.USAR_IDEALISTA_PRO:
-        bloques.append(buscar_idealista_pro())
+    # Idealista Pro
+    if config.USAR_IDEALISTA_PRO and not esta_portal_desactivado("IdealistaPro"):
+        try:
+            bloques.append(buscar_idealista_pro())
+        except Exception as e:
+            registrar_error_portal("IdealistaPro", f"Error general: {str(e)}")
 
-    if config.USAR_MILANUNCIOS:
-        bloques.append(buscar_milanuncios())
+    # Milanuncios
+    if config.USAR_MILANUNCIOS and not esta_portal_desactivado("Milanuncios"):
+        try:
+            bloques.append(buscar_milanuncios())
+        except Exception as e:
+            registrar_error_portal("Milanuncios", f"Error general: {str(e)}")
+    
+    # Mostrar portales desactivados
+    portales_desactivados = [portal for portal in ["DuckDuckGo", "Pisos", "Fotocasa", "Idealista", "Habitaclia", "Habitaclia+", "Fotocasacom", "Pisoscom", "IdealistaPro", "Milanuncios"] if esta_portal_desactivado(portal)]
+    if portales_desactivados:
+        print(f"Portales desactivados temporalmente: {', '.join(portales_desactivados)}")
 
     # Unir y eliminar duplicados por URL normalizada
     vistos: set[str] = set()
