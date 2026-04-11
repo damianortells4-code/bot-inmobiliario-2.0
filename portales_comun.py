@@ -543,7 +543,8 @@ def titulo_sugiere_inmobiliaria(titulo: str) -> bool:
         'keller williams', 'century 21', 'nova finques', 'cèntric finques',
         'aproperties', 'api properties', 'goldmark', 'signature luxury homes',
         'finques', 'real estate', 'properties', 'property', 'realstate',
-        'estate agency', 'estate agents', 'realty', 'realty group'
+        'estate', 'estate agency', 'estate agents', 'realty', 'realty group',
+        'tas'  # Término específico de tasación inmobiliaria
     }
     
     # === PALABRAS QUE INDICAN EMPRESA/NEGOCIO ===
