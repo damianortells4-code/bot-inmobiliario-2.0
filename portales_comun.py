@@ -528,13 +528,63 @@ def limpiar_portales_desactivados():
 
 def titulo_sugiere_inmobiliaria(titulo: str) -> bool:
     """
-    Filtro exhaustivo y preciso para detectar anuncios de inmobiliarias.
-    Prioriza evitar falsos positivos de particulares.
+    Filtro ultra restrictivo para detectar SOLO inmobiliarias reales.
+    Máxima prioridad: NO filtrar particulares NUNCA.
     """
     t = titulo.lower().strip()
     
-    # === PALABRAS QUE NUNCA DEBEN FILTRARSE (tipos de propiedad) ===
-    tipos_propiedad_excluidos = {
+    # === DEBUG: Mostrar qué se está analizando ===
+    print(f"   [DEBUG] Analizando título: '{titulo}'")
+    
+    # === PALABRAS QUE INDICAN INMOBILIARIA 100% SEGURO ===
+    palabras_inmobiliaria_seguras = {
+        'inmobiliaria', 'inmobiliarias', 'inmob', 'inmo', 'inmo.', 'inmob.',
+        'remax', 'remax ', 'engel & volkers', 'engel', 'coldwell banker',
+        'keller williams', 'century 21', 'nova finques', 'cèntric finques',
+        'aproperties', 'api properties', 'goldmark', 'signature luxury homes',
+        'finques', 'real estate', 'properties', 'property', 'realstate',
+        'estate agency', 'estate agents', 'realty', 'realty group'
+    }
+    
+    # === PALABRAS QUE INDICAN EMPRESA/NEGOCIO ===
+    palabras_empresa = {
+        'asesores', 'asesor', 'asesora', 'gestión', 'gestion', 'grupo',
+        'holding', 'empresa', 'empresas', 'corporation', 'corp', 'ltd',
+        'company', 'sl', 'sa', 's.l.', 'investment', 'capital',
+        'oportunidad', 'inversión', 'inversion', 'promo', 'promoción',
+        'urbanismo', 'construcción', 'obras nuevas', 'obra nueva',
+        'promotor', 'promotora', 'desarrollador', 'desarrolladora',
+        'negocio', 'negocios', 'comercial', 'comerciales', 'broker', 'brokers',
+        'agent', 'agents', 'agente', 'agentes', 'team', 'equipo',
+        'staff', 'personal', 'central', 'centro', 'servicio', 'servicios',
+        'administrador', 'administradora', 'administradores',
+        'consultor', 'consultora', 'consultores', 'manager',
+        'directivo', 'director', 'directora', 'profesional',
+        'profesionales', 'sr', 'sra', 'dña', 'don'
+    }
+    
+    # === CONTEXTOS QUE INDICAN 100% PARTICULAR ===
+    contextos_particular_definitivos = {
+        'particular', 'particulares', 'propietario', 'dueño', 'dueña',
+        'directo', 'sin comisión', 'sin comision', 'sin intermediario',
+        'particular a particular', 'de particular', 'por particular',
+        'propietario directo', 'dueño directo', 'sin agencia',
+        'sin inmobiliaria', 'sin tasación', 'sin gastos de agencia',
+        'trato directo', 'contacto directo', 'llamar al dueño',
+        'llamar al propietario', 'particular vende', 'particular alquila'
+    }
+    
+    # === FRASES COMPLETAS DE PARTICULARES ===
+    frases_particular_definitivas = [
+        'vendo particular', 'alquilo particular', 'particular vende',
+        'particular alquila', 'dueño vende', 'dueño alquila',
+        'propietario vende', 'propietario alquila', 'sin intermediarios',
+        'sin comisiones', 'compra directa', 'venta directa',
+        'alquiler directo', 'contacto con propietario'
+    ]
+    
+    # === TIPOS DE PROPIEDAD (NUNCA FILTRAR) ===
+    tipos_propiedad = {
         'finca', 'fincas', 'piso', 'pisos', 'chalet', 'chalets', 
         'ático', 'aticos', 'dúplex', 'duplex', 'estudio', 'estudios',
         'loft', 'lofts', 'garaje', 'garajes', 'trastero', 'trasteros',
@@ -545,125 +595,60 @@ def titulo_sugiere_inmobiliaria(titulo: str) -> bool:
         'bungalow', 'bungalows', 'estudio', 'estudios', 'loft', 'lofts'
     }
     
-    # === PALABRAS QUE SÍ INDICAN INMOBILIARIA (100% certeza) ===
-    palabras_inmobiliaria_definitivas = {
-        'inmobiliaria', 'inmobiliarias', 'inmob', 'inmo', 'inmo.', 'inmob.',
-        'remax', 'remax ', 'engel & volkers', 'engel', 'coldwell banker',
-        'keller williams', 'century 21', 'nova finques', 'cèntric finques',
-        'aproperties', 'api properties', 'goldmark', 'signature luxury homes',
-        'finques', 'real estate', 'properties', 'property', 'realstate',
-        'estate agency', 'estate agents', 'realty', 'realty group',
-        'habitaclia', 'fotocasa', 'idealista', 'pisos.com', 'milanuncios'
-    }
+    # === VERIFICACIÓN ULTRA restrictiva ===
     
-    # === PALABRAS QUE INDICAN INMOBILIARIA CON ALTA PROBABILIDAD ===
-    palabras_inmobiliaria_probables = {
-        'asesores', 'asesor', 'asesora', 'gestión', 'gestion', 'grupo',
-        'holding', 'empresa', 'empresas', 'corporation', 'corp', 'ltd',
-        'company', 'sl', 'sa', 's.l.', 'investment', 'capital',
-        'oportunidad', 'inversión', 'inversion', 'promo', 'promoción',
-        'urbanismo', 'construcción', 'obras nuevas', 'obra nueva',
-        'promotor', 'promotora', 'desarrollador', 'desarrolladora',
-        'negocio', 'negocios', 'comercial', 'comerciales', 'venta',
-        'vendedor', 'vendedora', 'vendedores', 'broker', 'brokers',
-        'agent', 'agents', 'agente', 'agentes', 'team', 'equipo',
-        'staff', 'personal', 'oficina', 'oficinas', 'central', 'centro',
-        'servicio', 'servicios', 'atención', 'atencion', 'cliente',
-        'clientes', 'contact', 'contacto', 'contactar', 'llamar',
-        'llame', 'llamen', 'llamada', 'llamadas', 'teléfono',
-        'telefono', 'phone', 'móvil', 'movil', 'whatsapp',
-        'email', 'mail', 'correo', 'web', 'página', 'pagina',
-        'sitio', 'online', 'digital', 'portal', 'portales',
-        'plataforma', 'plataformas', 'redes', 'social', 'facebook',
-        'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok',
-        'administrador', 'administradora', 'administradores',
-        'consultor', 'consultora', 'consultores', 'manager',
-        'directivo', 'director', 'directora', 'profesional',
-        'profesionales', 'sr', 'sra', 'dña', 'don'
-    }
-    
-    # === CONTEXTOS QUE INDICAN ANUNCIO DE PARTICULAR ===
-    contextos_particular_fuertes = {
-        'particular', 'particulares', 'propietario', 'dueño', 'dueña',
-        'directo', 'sin comisión', 'sin comision', 'sin intermediario',
-        'particular a particular', 'de particular', 'por particular',
-        'propietario directo', 'dueño directo', 'sin agencia',
-        'sin inmobiliaria', 'sin tasación', 'sin gastos de agencia',
-        'trato directo', 'contacto directo', 'llamar al dueño',
-        'llamar al propietario', 'particular vende', 'particular alquila'
-    }
-    
-    # === FRASES COMPLETAS QUE INDICAN PARTICULARES ===
-    frases_particulares = [
-        'vendo particular', 'alquilo particular', 'particular vende',
-        'particular alquila', 'dueño vende', 'dueño alquila',
-        'propietario vende', 'propietario alquila', 'sin intermediarios',
-        'sin comisiones', 'compra directa', 'venta directa',
-        'alquiler directo', 'contacto con propietario'
-    ]
-    
-    # === VERIFICACIÓN POR NIVELES ===
-    
-    # NIVEL 1: Palabras definitivas de inmobiliaria (100% certeza)
-    for palabra in palabras_inmobiliaria_definitivas:
-        if palabra in t:
-            return True
-    
-    # NIVEL 2: Verificar si hay contexto fuerte de particular
-    for contexto in contextos_particular_fuertes:
+    # PASO 1: Si hay contexto definitivo de particular, NUNCA filtrar
+    for contexto in contextos_particular_definitivos:
         if contexto in t:
+            print(f"   [DEBUG] Contexto particular encontrado: '{contexto}' -> NO FILTRAR")
             return False
     
-    # NIVEL 3: Verificar frases completas de particulares
-    for frase in frases_particulares:
+    # PASO 2: Si hay frase definitiva de particular, NUNCA filtrar
+    for frase in frases_particular_definitivas:
         if frase in t:
+            print(f"   [DEBUG] Frase particular encontrada: '{frase}' -> NO FILTRAR")
             return False
     
-    # NIVEL 4: Excluir tipos de propiedad
-    for tipo in tipos_propiedad_excluidos:
-        if tipo in t and len(tipo) > 3:
-            # Si es solo un tipo de propiedad sin otras palabras sospechosas
-            palabras_titulo = t.split()
-            if len(palabras_titulo) <= 3:  # Títulos cortos
+    # PASO 3: Si es SOLO tipo de propiedad, NUNCA filtrar
+    palabras_titulo = t.split()
+    if len(palabras_titulo) <= 4:  # Títulos cortos
+        solo_tipos_propiedad = True
+        for palabra in palabras_titulo:
+            if palabra not in tipos_propiedad:
+                solo_tipos_propiedad = False
+                break
+        
+        if solo_tipos_propiedad:
+            print(f"   [DEBUG] Solo tipos de propiedad -> NO FILTRAR")
+            return False
+    
+    # PASO 4: Palabras seguras de inmobiliaria (100% filtrar)
+    for palabra in palabras_inmobiliaria_seguras:
+        if palabra in t:
+            print(f"   [DEBUG] Palabra inmobiliaria segura: '{palabra}' -> FILTRAR")
+            return True
+    
+    # PASO 5: Palabras de empresa (con verificación estricta)
+    for palabra in palabras_empresa:
+        if len(palabra) <= 3:
+            continue
+            
+        if palabra in t:
+            # Verificación estricta: no debe haber contexto de particular
+            for contexto in contextos_particular_definitivos:
+                if contexto in t:
+                    print(f"   [DEBUG] Palabra empresa '{palabra}' con contexto particular '{contexto}' -> NO FILTRAR")
+                    return False
+            
+            # Verificación estricta: no debe ser solo tipo de propiedad
+            if palabra in tipos_propiedad:
+                print(f"   [DEBUG] Palabra empresa '{palabra}' es tipo de propiedad -> NO FILTRAR")
                 return False
-    
-    # NIVEL 5: Palabras probables de inmobiliaria (con verificación)
-    for palabra in palabras_inmobiliaria_probables:
-        if len(palabra) <= 3:
-            continue
             
-        if palabra in t:
-            # Verificar si está en contexto legítimo
-            for contexto in contextos_particular_fuertes:
-                if contexto in t:
-                    return False
-            
-            # Verificar si hay palabras de propiedad cerca
-            palabras_cercanas = ['finca', 'piso', 'chalet', 'ático', 'casa']
-            for prop in palabras_cercanas:
-                if prop in t and abs(t.find(palabra) - t.find(prop)) < 20:
-                    # Si está cerca de una palabra de propiedad, podría ser legítimo
-                    return False
-            
-            # Si pasa todas las verificaciones, es probable inmobiliaria
+            print(f"   [DEBUG] Palabra empresa detectada: '{palabra}' -> FILTRAR")
             return True
     
-    # NIVEL 6: Verificación final con lista original (más restrictiva)
-    for palabra in PALABRAS_INMOBILIARIA:
-        if len(palabra) <= 3:
-            continue
-            
-        # Excluir tipos de propiedad
-        if palabra in tipos_propiedad_excluidos:
-            continue
-            
-        if palabra in t:
-            # Última verificación de contexto
-            for contexto in contextos_particular_fuertes:
-                if contexto in t:
-                    return False
-            return True
-    
+    print(f"   [DEBUG] Sin criterios de filtrado -> NO FILTRAR")
     return False
 
 
