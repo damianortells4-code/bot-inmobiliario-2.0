@@ -527,56 +527,141 @@ def limpiar_portales_desactivados():
 
 
 def titulo_sugiere_inmobiliaria(titulo: str) -> bool:
-    t = titulo.lower()
+    """
+    Filtro exhaustivo y preciso para detectar anuncios de inmobiliarias.
+    Prioriza evitar falsos positivos de particulares.
+    """
+    t = titulo.lower().strip()
     
-    # Palabras que son muy comunes en anuncios de particulares y no deben filtrarse
-    palabras_excluidas = {
+    # === PALABRAS QUE NUNCA DEBEN FILTRARSE (tipos de propiedad) ===
+    tipos_propiedad_excluidos = {
         'finca', 'fincas', 'piso', 'pisos', 'chalet', 'chalets', 
         'ático', 'aticos', 'dúplex', 'duplex', 'estudio', 'estudios',
         'loft', 'lofts', 'garaje', 'garajes', 'trastero', 'trasteros',
         'local', 'locales', 'oficina', 'oficinas', 'nave', 'naves',
         'terreno', 'terrenos', 'solar', 'solares', 'parcela', 'parcelas',
-        'rustica', 'rustico', 'rústica', 'rústico'
+        'rustica', 'rustico', 'rústica', 'rústico', 'casa', 'casas',
+        'apartamento', 'apartamentos', 'villa', 'villas', 'masia', 'masias',
+        'bungalow', 'bungalows', 'estudio', 'estudios', 'loft', 'lofts'
     }
     
-    # Palabras que sí indican inmobiliaria con alta certeza
-    palabras_inmobiliaria_fuertes = {
+    # === PALABRAS QUE SÍ INDICAN INMOBILIARIA (100% certeza) ===
+    palabras_inmobiliaria_definitivas = {
         'inmobiliaria', 'inmobiliarias', 'inmob', 'inmo', 'inmo.', 'inmob.',
-        'remax', 'engel', 'coldwell', 'keller williams', 'century 21',
-        'nova finques', 'cèntric finques', 'aproperties', 'api properties',
-        'goldmark', 'signature luxury homes', 'finques', 'real estate',
-        'properties', 'property', 'realstate', 'estate'
+        'remax', 'remax ', 'engel & volkers', 'engel', 'coldwell banker',
+        'keller williams', 'century 21', 'nova finques', 'cèntric finques',
+        'aproperties', 'api properties', 'goldmark', 'signature luxury homes',
+        'finques', 'real estate', 'properties', 'property', 'realstate',
+        'estate agency', 'estate agents', 'realty', 'realty group',
+        'habitaclia', 'fotocasa', 'idealista', 'pisos.com', 'milanuncios'
     }
     
-    # Primero verificar si hay palabras fuertes de inmobiliaria
-    for palabra in palabras_inmobiliaria_fuertes:
+    # === PALABRAS QUE INDICAN INMOBILIARIA CON ALTA PROBABILIDAD ===
+    palabras_inmobiliaria_probables = {
+        'asesores', 'asesor', 'asesora', 'gestión', 'gestion', 'grupo',
+        'holding', 'empresa', 'empresas', 'corporation', 'corp', 'ltd',
+        'company', 'sl', 'sa', 's.l.', 'investment', 'capital',
+        'oportunidad', 'inversión', 'inversion', 'promo', 'promoción',
+        'urbanismo', 'construcción', 'obras nuevas', 'obra nueva',
+        'promotor', 'promotora', 'desarrollador', 'desarrolladora',
+        'negocio', 'negocios', 'comercial', 'comerciales', 'venta',
+        'vendedor', 'vendedora', 'vendedores', 'broker', 'brokers',
+        'agent', 'agents', 'agente', 'agentes', 'team', 'equipo',
+        'staff', 'personal', 'oficina', 'oficinas', 'central', 'centro',
+        'servicio', 'servicios', 'atención', 'atencion', 'cliente',
+        'clientes', 'contact', 'contacto', 'contactar', 'llamar',
+        'llame', 'llamen', 'llamada', 'llamadas', 'teléfono',
+        'telefono', 'phone', 'móvil', 'movil', 'whatsapp',
+        'email', 'mail', 'correo', 'web', 'página', 'pagina',
+        'sitio', 'online', 'digital', 'portal', 'portales',
+        'plataforma', 'plataformas', 'redes', 'social', 'facebook',
+        'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok',
+        'administrador', 'administradora', 'administradores',
+        'consultor', 'consultora', 'consultores', 'manager',
+        'directivo', 'director', 'directora', 'profesional',
+        'profesionales', 'sr', 'sra', 'dña', 'don'
+    }
+    
+    # === CONTEXTOS QUE INDICAN ANUNCIO DE PARTICULAR ===
+    contextos_particular_fuertes = {
+        'particular', 'particulares', 'propietario', 'dueño', 'dueña',
+        'directo', 'sin comisión', 'sin comision', 'sin intermediario',
+        'particular a particular', 'de particular', 'por particular',
+        'propietario directo', 'dueño directo', 'sin agencia',
+        'sin inmobiliaria', 'sin tasación', 'sin gastos de agencia',
+        'trato directo', 'contacto directo', 'llamar al dueño',
+        'llamar al propietario', 'particular vende', 'particular alquila'
+    }
+    
+    # === FRASES COMPLETAS QUE INDICAN PARTICULARES ===
+    frases_particulares = [
+        'vendo particular', 'alquilo particular', 'particular vende',
+        'particular alquila', 'dueño vende', 'dueño alquila',
+        'propietario vende', 'propietario alquila', 'sin intermediarios',
+        'sin comisiones', 'compra directa', 'venta directa',
+        'alquiler directo', 'contacto con propietario'
+    ]
+    
+    # === VERIFICACIÓN POR NIVELES ===
+    
+    # NIVEL 1: Palabras definitivas de inmobiliaria (100% certeza)
+    for palabra in palabras_inmobiliaria_definitivas:
         if palabra in t:
             return True
     
-    # Luego verificar otras palabras pero excluyendo las comunes de propiedades
-    for palabra in PALABRAS_INMOBILIARIA:
-        # Solo filtrar palabras de más de 3 caracteres para evitar falsos positivos
+    # NIVEL 2: Verificar si hay contexto fuerte de particular
+    for contexto in contextos_particular_fuertes:
+        if contexto in t:
+            return False
+    
+    # NIVEL 3: Verificar frases completas de particulares
+    for frase in frases_particulares:
+        if frase in t:
+            return False
+    
+    # NIVEL 4: Excluir tipos de propiedad
+    for tipo in tipos_propiedad_excluidos:
+        if tipo in t and len(tipo) > 3:
+            # Si es solo un tipo de propiedad sin otras palabras sospechosas
+            palabras_titulo = t.split()
+            if len(palabras_titulo) <= 3:  # Títulos cortos
+                return False
+    
+    # NIVEL 5: Palabras probables de inmobiliaria (con verificación)
+    for palabra in palabras_inmobiliaria_probables:
         if len(palabra) <= 3:
             continue
-        
-        # Si la palabra está en la lista de exclusiones, ignorarla
-        if palabra in palabras_excluidas:
+            
+        if palabra in t:
+            # Verificar si está en contexto legítimo
+            for contexto in contextos_particular_fuertes:
+                if contexto in t:
+                    return False
+            
+            # Verificar si hay palabras de propiedad cerca
+            palabras_cercanas = ['finca', 'piso', 'chalet', 'ático', 'casa']
+            for prop in palabras_cercanas:
+                if prop in t and abs(t.find(palabra) - t.find(prop)) < 20:
+                    # Si está cerca de una palabra de propiedad, podría ser legítimo
+                    return False
+            
+            # Si pasa todas las verificaciones, es probable inmobiliaria
+            return True
+    
+    # NIVEL 6: Verificación final con lista original (más restrictiva)
+    for palabra in PALABRAS_INMOBILIARIA:
+        if len(palabra) <= 3:
             continue
             
-        # Verificar que la palabra no esté en un contexto de propiedad
-        if palabra in t:
-            # Contextos donde la palabra podría ser legítima de particular
-            contextos_legitimos = [
-                'venta de', 'alquiler de', 'particular', 'propietario',
-                'dueño', 'particulares', 'directo', 'sin comisión',
-                'sin intermediario', 'particular a particular'
-            ]
+        # Excluir tipos de propiedad
+        if palabra in tipos_propiedad_excluidos:
+            continue
             
-            # Si hay algún contexto legítimo, no filtrar
-            if any(ctx in t for ctx in contextos_legitimos):
-                continue
-                
-            # Si no hay contexto legítimo, filtrar
+        if palabra in t:
+            # Última verificación de contexto
+            for contexto in contextos_particular_fuertes:
+                if contexto in t:
+                    return False
             return True
     
     return False
