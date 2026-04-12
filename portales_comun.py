@@ -544,7 +544,40 @@ def titulo_sugiere_inmobiliaria(titulo: str) -> bool:
         'aproperties', 'api properties', 'goldmark', 'signature luxury homes',
         'finques', 'real estate', 'properties', 'property', 'realstate',
         'estate', 'estate agency', 'estate agents', 'realty', 'realty group',
-        'tas'  # Término específico de tasación inmobiliaria
+        'tas',  # Término específico de tasación inmobiliaria
+        # Palabras más comunes que usan las inmobiliarias
+        'inmobles', 'inmoble', 'inmo', 'inmos', 'inmob.',
+        'real', 'estate', 'properties', 'property', 'realty',
+        'homes', 'home', 'house', 'housing', 'living',
+        'group', 'agency', 'agencies', 'partners', 'partners',
+        'solutions', 'solution', 'services', 'service',
+        'consulting', 'consultancy', 'advisor', 'advisors',
+        'management', 'manage', 'asset', 'assets',
+        'investment', 'investments', 'capital', 'fund',
+        'global', 'international', 'world', 'worldwide',
+        'premium', 'luxury', 'exclusive', 'elite',
+        'select', 'selection', 'choice', 'choices',
+        'expert', 'experts', 'specialist', 'specialists',
+        'professional', 'professionals', 'pro', 'pros',
+        'leader', 'leaders', 'leading', 'lead',
+        'top', 'best', 'quality', 'excellence',
+        'trust', 'trusted', 'reliable', 'secure',
+        'network', 'networks', 'connection', 'connections',
+        'market', 'marketing', 'sales', 'sell',
+        'buy', 'buyer', 'purchase', 'rental',
+        'lease', 'leasing', 'rent', 'rents',
+        'property', 'properties', 'realty', 'real',
+        'home', 'homes', 'house', 'houses',
+        'apartment', 'apartments', 'flat', 'flats',
+        'villa', 'villas', 'mansion', 'mansions',
+        'condo', 'condos', 'penthouse', 'penthouses',
+        'studio', 'studios', 'loft', 'lofts',
+        'commercial', 'retail', 'office', 'offices',
+        'industrial', 'warehouse', 'warehouses',
+        'land', 'lands', 'plot', 'plots',
+        'development', 'developments', 'project', 'projects',
+        'construction', 'building', 'buildings',
+        'urban', 'urbanization', 'planning', 'plan'
     }
     
     # === PALABRAS QUE INDICAN EMPRESA/NEGOCIO ===
